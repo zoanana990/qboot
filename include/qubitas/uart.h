@@ -1,7 +1,8 @@
 #ifndef __UART_H__
 #define __UART_H__
 
-#include <utils.h>
+#include <qubitas/type.h>
+#include <qubitas/utils.h>
 
 #define DEFAULT_FCLK                (16000000U)
 #define BAUDRATE                    (115200U)

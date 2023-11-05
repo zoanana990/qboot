@@ -1,7 +1,8 @@
 #ifndef __CRC_H__
 #define __CRC_H__
 
-#include <utils.h>
+#include <qubitas/utils.h>
+#include <qubitas/type.h>
 
 /* CRC initialization */
 void crc_init(void);
