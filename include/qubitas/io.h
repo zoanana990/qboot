@@ -5,5 +5,6 @@
 
 void io_write(void *addr, u32 val);
 u32 io_read(void *addr);
+void io_writeMask(void *addr, u32 val, u32 mask);
 
 #endif

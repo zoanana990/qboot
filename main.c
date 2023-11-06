@@ -1,18 +1,27 @@
-#include <qubitas/utils.h>
+#include <qubitas/string.h>
 #include <qubitas/uart.h>
+#include <qubitas/dma.h>
 #include <qubitas/crc.h>
-#include <qubitas/printk.h>
 #include <qubitas/gpio.h>
+
+extern char DMA_DATA_STREAM[DMA_MAX_STRLEN];
 
 int main()
 {
     usart_init();
     crc_init();
     button_init();
-    char str[] = "\r\n\r\nQubitas Bootloader @Copyright 2023.10.10\r\n\r\n";
-    usart_send_data((u8 *)str, sizeof(str));
+    dma1_init();
+
+    char str[] = "Qubitas Bootloader @Copyright 2023.10.10\r\n";
+    strncpy(DMA_DATA_STREAM, str, 60);
+//    usart_txData((u8 *)DMA_DATA_STREAM);
+
     while(1)
     {
-        usart_receive_data();
+        usart_rxData();
     }
+
+    /* not expect to go here */
+    return 0;
 }

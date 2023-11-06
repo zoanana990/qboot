@@ -3,14 +3,6 @@
 ######################################
 TARGET = bootloader
 
-######################################
-# building variables
-######################################
-# debug build?
-DEBUG = 1
-# optimization
-OPT = -Og
-
 #######################################
 # paths
 #######################################
@@ -23,8 +15,14 @@ BUILD_DIR = build
 # C sources
 C_SOURCES =  \
 main.c \
+driver/gpio.c \
 driver/uart.c \
 driver/crc.c \
+driver/exti.c \
+driver/dma.c \
+lib/io.c \
+lib/string.c \
+
 
 # ASM sources
 ASM_SOURCES =  \
@@ -59,7 +57,8 @@ AS_DEFS =
 # C defines
 C_DEFS =  \
 -DUSE_HAL_DRIVER \
--DSTM32F746xx
+-DSTM32F746xx \
+-D__QUBITAS__
 
 # AS includes
 AS_INCLUDES = 
@@ -67,15 +66,15 @@ AS_INCLUDES =
 # C includes
 C_INCLUDES =  \
 -Iinclude \
+-Iqubitas
+
+# optimization
+OPT = -Og
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
 
-CFLAGS += $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
-
-ifeq ($(DEBUG), 1)
-CFLAGS += -g -gdwarf-2
-endif
+CFLAGS += $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections -nostdlib -Werror
 
 # Generate dependency information
 CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
@@ -87,7 +86,7 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 LDSCRIPT = STM32F746ZGTx_FLASH.ld
 
 # libraries
-LIBS = -lc -lm -lnosys 
+LIBS = -lc -lm
 LIBDIR = 
 LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
 

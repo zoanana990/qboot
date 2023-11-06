@@ -4,6 +4,6 @@
 #define NULL            ((void *) 0)
 #define TRUE            (1)
 #define FALSE           (0)
-#define MASK(n)         (~(~0U << (n))) 
+#define MASK(bit)         (~(~0U << (bit))) 
 
 #endif
