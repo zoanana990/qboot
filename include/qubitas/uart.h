@@ -11,7 +11,7 @@ void usart_init(void);
 void usart_reset(void);
 
 /* send n-bytes data */
-void usart_send_data(u8 *pTxBuffer, u8 len);
+void usart_txData(u8 *ptr_tx_buffer);
 
 /* receive 1 byte data */
 u8 usart_receive_data(void);

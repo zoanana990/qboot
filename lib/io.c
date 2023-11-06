@@ -23,7 +23,7 @@ u32 io_read(void *addr)
     return val;
 }
 
-void io_writeMask(void *addr, u32 val, u32 mask, u32 bit)
+void io_writeMask(void *addr, u32 val, u32 mask)
 {
-
+    io_write(addr, (io_read(addr) & ~(mask)) | (val & mask));
 }
