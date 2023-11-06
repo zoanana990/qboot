@@ -4,15 +4,18 @@
 #include <qubitas/gpio.h>
 #include <qubitas/io.h>
 #include <qubitas/printk.h>
+#include <qubitas/dma.h>
 
 #define DEFAULT_FCLK                (16000000U)
 #define BAUDRATE                    (115200U)
 
 #define RCC_BASE                    (0x40023800UL)
+#define RCC_AHB1ENR                 (RCC_BASE + 0x30UL)
 #define RCC_APB1ENR                 (RCC_BASE + 0x40UL)
 #define RCC_APB1RSTR                (RCC_BASE + 0x20UL)
 
 #define RCC_USART3_PIN              (18)
+#define RCC_DMA1_EN_PIN             (21)
 
 #define USART3_BASE                 (0x40004800UL)
 
@@ -36,8 +39,9 @@
 
 #define USART_RQR_RXFRQ_BIT         (3)
 
-/* USART3 initialization
- */
+extern char DMA_DATA_STREAM[DMA_MAX_STRLEN];
+
+/* USART3 initialization */
 void usart_init(void)
 {
     u32 base = USART3_BASE;
@@ -123,7 +127,7 @@ void put_c(char *ptr_tx_buffer)
 }
 
 /* receive 1 byte data */
-u8 usart_receive_data(void)
+u8 usart_rxData(void)
 {
     u8 data;
     u32 base = USART3_BASE;
@@ -139,35 +143,4 @@ u8 usart_receive_data(void)
     io_write((void *)USART_RQR(base), MASK(1) << USART_RQR_RXFRQ_BIT);
 
     return data;
-}
-
-void dma_init(void)
-{
-    /* 1. enable the peripheral clock for the dma */
-
-    /* 2. identify the stream which is suitable for your peripheral */
-
-    /* 3. Identify the channel number on which uart2 peripheral serial */
-
-    /* 4. Program the source address */
-
-    /* 5. Program the destination address */
-
-    /* 6. Program the number of data items to send */
-
-    /* 7. The direction of data transfer, m2p, p2m, m2m */
-
-    /* 8. Program the source and destination data width */
-
-    /* 9. Direct mode or fifo mode */
-
-    /* 10. Select the fifo threshold */
-
-    /* 11. Enable the circular mode if required */
-
-    /* 12. Single transfer or burst transfer */
-
-    /* 13. Configure the stream priority */
-
-    /* 14. Enable the stream */
 }
