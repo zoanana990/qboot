@@ -19,4 +19,9 @@ inline void nvic_interrupt_enable(u8 irq_number)
     NVIC_ISER[offset] |= 1 << pos;
 }
 
+inline void nvic_interrupt_disable(u8 irq_number)
+{
+    
+}
+
 #endif

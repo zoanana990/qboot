@@ -47,9 +47,16 @@ enum {
     GPIO_FUNC_USART = 7,
 };
 
+enum {
+    GPIO_OUTPUT_NO_PUPD = 0,
+    GPIO_OUTPUT_Pull_UP,
+    GPIO_OUTPUT_Pull_DOWN,
+};
+
 void gpio_init(int port);
 void gpio_setMode(int port, int pin, int mode);
 s32 gpio_getMode(int port, int pin);
+void gpio_setPuPd(int port, int pin, int pupd);
 void gpio_setAltFunc(int port, int pin, int func);
 void button_init(void);
 
