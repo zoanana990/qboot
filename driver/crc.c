@@ -1,4 +1,6 @@
-#include <crc.h>
+#include <qubitas/crc.h>
+
+/* TODO: use base + offset */
 
 /* AHB peripheral clock enable register */
 #define RCC_AHB1ENR *(__vo u32 *) 0x40023830U
