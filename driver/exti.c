@@ -51,9 +51,3 @@ void EXTI15_10_IRQHandler(void)
 //    usart_txData((u8 *)DMA_DATA_STREAM);
     clear_exti_pending_bit(13);
 }
-
-/* IRQ handler for DMA1 stream3 */
-void DMA1_Stream3_IRQHandler(void)
-{
-
-}

@@ -12,6 +12,8 @@ int main()
     crc_init();
     button_init();
     dma1_init();
+    dma_configIntr(DMA1, DMA_STREAM3);
+    dma_enStreamX(DMA1, DMA_STREAM3);
 
     char str[] = "Qubitas Bootloader @Copyright 2023.10.10\r\n";
     strncpy(DMA_DATA_STREAM, str, 60);

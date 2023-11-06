@@ -14,14 +14,15 @@ BUILD_DIR = build
 ######################################
 # C sources
 C_SOURCES =  \
-main.c \
 driver/gpio.c \
 driver/uart.c \
 driver/crc.c \
 driver/exti.c \
 driver/dma.c \
+driver/nvic.c \
 lib/io.c \
 lib/string.c \
+main.c \
 
 
 # ASM sources

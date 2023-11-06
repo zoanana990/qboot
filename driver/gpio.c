@@ -99,5 +99,5 @@ void button_init(void)
     /* 6. Enable the IRQ related to that gpio pin in NVIC of the processor 
      *    The irq number is 40
      */
-    nvic_interrupt_enable(BUTTON_EXTI);
+    nvic_enIrq(BUTTON_EXTI);
 }

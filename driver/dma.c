@@ -2,6 +2,7 @@
 #include <qubitas/type.h>
 #include <qubitas/io.h>
 #include <qubitas/utils.h>
+#include <qubitas/nvic.h>
 
 #define RCC_BASE                    (0x40023800UL)
 #define RCC_AHB1ENR                 (RCC_BASE + 0x30UL)
@@ -17,13 +18,31 @@
 #define DMA1_BASE                   (0x40026000UL)
 #define DMA2_BASE                   (0x40026499UL)
 #define DMA2D_BASE                  (0x4002B000UL)
+#define DMA_LISR(base)              (base + 0x00UL)
+#define DMA_LIFCR(base)             (base + 0x08UL)
 #define DMA_SxCR(base)              (base + 0x10UL)
 #define DMA_SxNDTR(base)            (base + 0x14UL)
 #define DMA_SxPAR(base)             (base + 0x18UL)
 #define DMA_SxM0AR(base)            (base + 0x1CUL)
 #define DMA_SxFCR(base)             (base + 0x24UL)
 
+#define DMA_LISR_FEIF3_BIT          (22)
+#define DMA_LISR_DMEIF3_BIT         (24)
+#define DMA_LISR_TEIF3_BIT          (25)
+#define DMA_LISR_HTIF3_BIT          (26)
+#define DMA_LISR_TCIF3_BIT          (27)
+
+#define DMA_LIFCR_FEIF3_BIT         (22)
+#define DMA_LIFCR_DMEIF3_BIT        (24)
+#define DMA_LIFCR_TEIF3_BIT         (25)
+#define DMA_LIFCR_HTIF3_BIT         (26)
+#define DMA_LIFCR_TCIF3_BIT         (27)
+
 #define DMA_CR_EN_BIT               (0)
+#define DMA_CR_DMEIE_BIT            (1)
+#define DMA_CR_TEIE_BIT             (2)
+#define DMA_CR_HTIE_BIT             (3)
+#define DMA_CR_TCIE_BIT             (4)
 #define DMA_CR_DIR_BIT              (6)
 #define DMA_CR_MINC_BIT             (10)
 #define DMA_CR_PSIZE_BIT            (11)
@@ -32,8 +51,27 @@
 
 #define DMA_FCR_FTH_BIT             (0)
 #define DMA_FCR_DMDIS_BIT           (2)
+#define DMA_FCR_FEIE_BIT            (7)
+
+#define DMA_IRQ_BASE_NO             (11)
+
+#define DMA_IRQ_STREAM7             (47)
+
+#define USART3_BASE                 (0x40004800UL)
+#define USART_CR3(base)             (base + 0x08UL)
+#define USART_CR3_DMAT_BIT          (7)
 
 char DMA_DATA_STREAM[DMA_MAX_STRLEN];
+
+u32 dma_getBase(u32 dma_channel)
+{
+    if(dma_channel == DMA1)
+        return DMA1_BASE;
+    else if (dma_channel == DMA2)
+        return DMA2_BASE;
+    else
+        return DMA2D_BASE;
+}
 
 u32 dma_getStreamBase(u32 dma_channel, u32 stream)
 {
@@ -47,6 +85,42 @@ u32 dma_getStreamBase(u32 dma_channel, u32 stream)
     else
         return 0;
     return (base + 0x18 * stream);
+}
+void dma_enStreamX(u32 dma_channel, u32 stream)
+{
+    u32 base = dma_getStreamBase(dma_channel, stream);
+
+    io_writeMask((void *)DMA_SxCR(base), 1 << DMA_CR_EN_BIT,
+                 MASK(1) << DMA_CR_EN_BIT);
+}
+
+void dma_configIntr(u32 dma_channel, u32 stream)
+{
+    u32 base = dma_getStreamBase(dma_channel, stream);
+    u32 irq_no = ((stream == 7) ? DMA_IRQ_STREAM7 : (stream + DMA_IRQ_BASE_NO));
+
+    /* 1. Config Half-transfer IE (HTIE) */
+    io_writeMask((void *)DMA_SxCR(base), 1 << DMA_CR_HTIE_BIT,
+                 MASK(1) << DMA_CR_HTIE_BIT);
+
+    /* 2. Transfer complete IE (TCIE) */
+    io_writeMask((void *)DMA_SxCR(base), 1 << DMA_CR_TCIE_BIT,
+                 MASK(1) << DMA_CR_TCIE_BIT);
+
+    /* 3. Transfer error IE (TEIE) */
+    io_writeMask((void *)DMA_SxCR(base), 1 << DMA_CR_TEIE_BIT,
+                 MASK(1) << DMA_CR_TEIE_BIT);
+
+    /* 4. FIFO overrun/underrun IE (FEIE) */
+    io_writeMask((void *)DMA_SxFCR(base), 1 << DMA_FCR_FEIE_BIT,
+                 MASK(1) << DMA_FCR_FEIE_BIT);
+
+    /* 5. Direct mode error (DMEIE) */
+    io_writeMask((void *)DMA_SxCR(base), 1 << DMA_CR_DMEIE_BIT,
+                 MASK(1) << DMA_CR_DMEIE_BIT);
+
+    /* 6. Enable the IRQ for DMA1 stream global interrupt in NVIC */
+    nvic_enIrq(irq_no);
 }
 
 void dma1_init(void)
@@ -113,8 +187,63 @@ void dma1_init(void)
     /* 12. Single transfer or burst transfer */
 
     /* 13. Configure the stream priority */
+}
 
-    /* 14. Enable the stream */
-    io_writeMask((void *)DMA_SxCR(base3), 1 << DMA_CR_EN_BIT,
-                 MASK(1) << DMA_CR_EN_BIT);
+/* IRQ handler for DMA1 stream3 */
+void DMA1_Stream3_IRQHandler(void)
+{
+    u32 base = dma_getBase(DMA1);
+    if((io_read((void *)DMA_LISR(base)) >> DMA_LISR_HTIF3_BIT) & 1) {
+        io_write((void *)DMA_LIFCR(base), 1 << DMA_LIFCR_HTIF3_BIT);
+        dma_htCallback();
+    }
+    else if((io_read((void *)DMA_LISR(base)) >> DMA_LISR_TCIF3_BIT) & 1) {
+        io_write((void *)DMA_LIFCR(base), 1 << DMA_LIFCR_TCIF3_BIT);
+        dma_ftCallback();
+    }
+    else if((io_read((void *)DMA_LISR(base)) >> DMA_LISR_TEIF3_BIT) & 1) {
+        io_write((void *)DMA_LIFCR(base), 1 << DMA_LIFCR_TEIF3_BIT);
+        dma_teCallback();
+    }
+    else if((io_read((void *)DMA_LISR(base)) >> DMA_LISR_FEIF3_BIT) & 1) {
+        io_write((void *)DMA_LIFCR(base), 1 << DMA_LIFCR_FEIF3_BIT);
+        dma_feCallback();
+    }
+    else if((io_read((void *)DMA_LISR(base)) >> DMA_LISR_DMEIF3_BIT) & 1) {
+        io_write((void *)DMA_LIFCR(base), 1 << DMA_LIFCR_DMEIF3_BIT);
+        dma_dmeCallback();
+    }
+    else
+        return;
+}
+
+void dma_htCallback(void)
+{
+
+}
+
+void dma_ftCallback(void)
+{
+    u32 base = dma_getStreamBase(DMA1, 3);
+    io_write((void *) DMA_SxNDTR(base), DMA_MAX_STRLEN);
+
+    io_writeMask((void *)USART_CR3(USART3_BASE), 0 << USART_CR3_DMAT_BIT,
+                 1 << USART_CR3_DMAT_BIT);
+
+    dma_enStreamX(DMA1, DMA_STREAM3);
+}
+
+void dma_teCallback(void)
+{
+    while(1);
+}
+
+void dma_dmeCallback(void)
+{
+    while(1);
+}
+
+void dma_feCallback(void)
+{
+    while(1);
 }
