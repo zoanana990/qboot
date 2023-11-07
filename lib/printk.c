@@ -169,7 +169,7 @@ static void _do_print(register const char *fmt, va_list *argp, putc out) {
                 register char *p2;
 
                 if (precision == -1)
-                    precision = 0x7fffffff;    /* MAXINT */
+                    precision = INT_MAX;
 
                 p = va_arg(*argp, char *);
 
@@ -231,14 +231,9 @@ static void _do_print(register const char *fmt, va_list *argp, putc out) {
                 static char digits[] = "0123456789abcdef0123456789ABCDEF";
                 char *prefix = 0;
 
-                if (truncate) u = (long) ((int) (u));
-
-                if (u != 0 && altfmt) {
-                    if (base == 8)
-                        prefix = "0";
-                    else if (base == 16)
+                if (u != 0 && altfmt)
+                    if (base == 16)
                         prefix = "0x";
-                }
 
                 do {
                     /* Print in the correct case */
