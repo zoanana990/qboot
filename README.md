@@ -10,6 +10,8 @@ This is a simple bootloader for exercise
   simplied the code and support multi-devices
 
 ## Features
-
-- `printf`: refer to the [project](https://github.com/mpaland/printf)
+- `printk`
+- `scanf`: implement by DMA
+- context switch
+- 
 
