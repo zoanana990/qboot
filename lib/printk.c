@@ -1,5 +1,4 @@
 #include <qubitas/printk.h>
-#include <qubitas/uart.h>
 #include <qubitas/utils.h>
 #include <qubitas/string.h>
 
@@ -24,20 +23,6 @@ typedef void (*putc)(char);
  * %-m.n    left adjustment
  *
  *************************************************************************/
-void _printNum(register u32 u, register s32 base, putc out) {
-    char buf[MAXBUF];
-    register char *p = &buf[MAXBUF - 1];
-    static char digits[] = "0123456789abcdef";
-
-    do {
-        *p-- = digits[u % base];
-        u /= base;
-    } while (u != 0);
-
-    while (++p != &buf[MAXBUF])
-        out(*p);
-}
-
 static void _do_print(register const char *fmt, va_list *argp, putc out) {
     register char c;
     s32 length;
