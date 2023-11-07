@@ -22,6 +22,7 @@ driver/dma.c \
 driver/nvic.c \
 lib/io.c \
 lib/string.c \
+lib/printk.c \
 main.c \
 
 

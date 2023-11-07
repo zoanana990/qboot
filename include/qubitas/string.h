@@ -3,9 +3,8 @@
 
 #include <qubitas/type.h>
 
-char *strncpy(
-        char *dst,
-        const char *src,
-        register size_t n);
+char *strncpy(char *dst, const char *src, register size_t n);
+
+size_t strlen(const char *str);
 
 #endif

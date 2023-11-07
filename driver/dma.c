@@ -61,11 +61,10 @@
 #define USART_CR3(base)             (base + 0x08UL)
 #define USART_CR3_DMAT_BIT          (7)
 
-char DMA_DATA_STREAM[DMA_MAX_STRLEN];
+char DMA_TX_DATA_STREAM[DMA_MAX_STRLEN];
 
-u32 dma_getBase(u32 dma_channel)
-{
-    if(dma_channel == DMA1)
+u32 dma_getBase(u32 dma_channel) {
+    if (dma_channel == DMA1)
         return DMA1_BASE;
     else if (dma_channel == DMA2)
         return DMA2_BASE;
@@ -73,10 +72,9 @@ u32 dma_getBase(u32 dma_channel)
         return DMA2D_BASE;
 }
 
-u32 dma_getStreamBase(u32 dma_channel, u32 stream)
-{
+u32 dma_getStreamBase(u32 dma_channel, u32 stream) {
     u32 base;
-    if(dma_channel == DMA1)
+    if (dma_channel == DMA1)
         base = DMA1_BASE;
     else if (dma_channel == DMA2)
         base = DMA2_BASE;
@@ -86,51 +84,49 @@ u32 dma_getStreamBase(u32 dma_channel, u32 stream)
         return 0;
     return (base + 0x18 * stream);
 }
-void dma_enStreamX(u32 dma_channel, u32 stream)
-{
+
+void dma_enStreamX(u32 dma_channel, u32 stream) {
     u32 base = dma_getStreamBase(dma_channel, stream);
 
-    io_writeMask((void *)DMA_SxCR(base), 1 << DMA_CR_EN_BIT,
+    io_writeMask(DMA_SxCR(base), 1 << DMA_CR_EN_BIT,
                  MASK(1) << DMA_CR_EN_BIT);
 }
 
-void dma_configIntr(u32 dma_channel, u32 stream)
-{
+void dma_configIntr(u32 dma_channel, u32 stream) {
     u32 base = dma_getStreamBase(dma_channel, stream);
     u32 irq_no = ((stream == 7) ? DMA_IRQ_STREAM7 : (stream + DMA_IRQ_BASE_NO));
 
     /* 1. Config Half-transfer IE (HTIE) */
-    io_writeMask((void *)DMA_SxCR(base), 1 << DMA_CR_HTIE_BIT,
+    io_writeMask(DMA_SxCR(base), 1 << DMA_CR_HTIE_BIT,
                  MASK(1) << DMA_CR_HTIE_BIT);
 
     /* 2. Transfer complete IE (TCIE) */
-    io_writeMask((void *)DMA_SxCR(base), 1 << DMA_CR_TCIE_BIT,
+    io_writeMask(DMA_SxCR(base), 1 << DMA_CR_TCIE_BIT,
                  MASK(1) << DMA_CR_TCIE_BIT);
 
     /* 3. Transfer error IE (TEIE) */
-    io_writeMask((void *)DMA_SxCR(base), 1 << DMA_CR_TEIE_BIT,
+    io_writeMask(DMA_SxCR(base), 1 << DMA_CR_TEIE_BIT,
                  MASK(1) << DMA_CR_TEIE_BIT);
 
     /* 4. FIFO overrun/underrun IE (FEIE) */
-    io_writeMask((void *)DMA_SxFCR(base), 1 << DMA_FCR_FEIE_BIT,
+    io_writeMask(DMA_SxFCR(base), 1 << DMA_FCR_FEIE_BIT,
                  MASK(1) << DMA_FCR_FEIE_BIT);
 
     /* 5. Direct mode error (DMEIE) */
-    io_writeMask((void *)DMA_SxCR(base), 1 << DMA_CR_DMEIE_BIT,
+    io_writeMask(DMA_SxCR(base), 1 << DMA_CR_DMEIE_BIT,
                  MASK(1) << DMA_CR_DMEIE_BIT);
 
     /* 6. Enable the IRQ for DMA1 stream global interrupt in NVIC */
     nvic_enIrq(irq_no);
 }
 
-void dma1_init(void)
-{
-//    u32 base1;
+void dma1_init(void) {
+    u32 base1;
     u32 base3;
     /* 1. enable the peripheral clock for the dma
      *    AHB1 Bus, RCC_AHB1Bus enable
      * */
-    io_writeMask((void *)RCC_AHB1ENR, 1 << RCC_DMA1_EN_PIN,
+    io_writeMask(RCC_AHB1ENR, 1 << RCC_DMA1_EN_PIN,
                  MASK(1) << RCC_DMA1_EN_PIN);
 
     /* 2. identify the stream which is suitable for your peripheral
@@ -139,26 +135,28 @@ void dma1_init(void)
      *      USART3_RX: Stream 1, Channel 4
      *    - Notice that, the register address = address + 0x18 * stream number
      * */
-//    base1 = dma_getStreamBase(DMA1, 1);
+    base1 = dma_getStreamBase(DMA1, 1);
+    io_writeMask(DMA_SxCR(base1), 4 << DMA_CR_CHSEL_BIT,
+                 MASK(3) << DMA_CR_CHSEL_BIT);
     base3 = dma_getStreamBase(DMA1, 3);
-    io_writeMask((void *) DMA_SxCR(base3), 4 << DMA_CR_CHSEL_BIT,
+    io_writeMask(DMA_SxCR(base3), 4 << DMA_CR_CHSEL_BIT,
                  MASK(3) << DMA_CR_CHSEL_BIT);
 
     /* 3. Identify the channel number on which uart3 peripheral serial */
 
     /* 4. Program the source address (memory) */
-    io_write((void *) DMA_SxM0AR(base3), (u32) DMA_DATA_STREAM);
+    io_write(DMA_SxM0AR(base3), (u32) DMA_TX_DATA_STREAM);
 
     /* 5. Program the destination address (peripheral) */
-    io_write((void *) DMA_SxPAR(base3), (u32) USART_TDR(USART3_BASE));
+    io_write(DMA_SxPAR(base3), (u32) USART_TDR(USART3_BASE));
 
     /* 6. Program the number of data items to send */
-    io_write((void *) DMA_SxNDTR(base3), DMA_MAX_STRLEN);
+    io_write(DMA_SxNDTR(base3), DMA_MAX_STRLEN);
 
     /* 7.   The direction of data transfer, m2p, p2m, m2m
      * 7.1. We config the direction of DMA, that is, memory to peripheral
      * */
-    io_writeMask((void *)DMA_SxCR(base3), 1 << DMA_CR_DIR_BIT,
+    io_writeMask(DMA_SxCR(base3), 1 << DMA_CR_DIR_BIT,
                  MASK(2) << DMA_CR_DIR_BIT);
 
     /* 8. Program the source and destination data width
@@ -166,21 +164,21 @@ void dma1_init(void)
      * 8.2. We need to config the peripheral data size for DMA
      * 8.3. Enable the memory auto-increment
      * */
-    io_writeMask((void *)DMA_SxCR(base3), 0 << DMA_CR_MSIZE_BIT,
+    io_writeMask(DMA_SxCR(base3), 0 << DMA_CR_MSIZE_BIT,
                  MASK(2) << DMA_CR_MSIZE_BIT);
-    io_writeMask((void *)DMA_SxCR(base3), 0 << DMA_CR_PSIZE_BIT,
+    io_writeMask(DMA_SxCR(base3), 0 << DMA_CR_PSIZE_BIT,
                  MASK(2) << DMA_CR_PSIZE_BIT);
-    io_writeMask((void *)DMA_SxCR(base3), 1 << DMA_CR_MINC_BIT,
+    io_writeMask(DMA_SxCR(base3), 1 << DMA_CR_MINC_BIT,
                  MASK(1) << DMA_CR_MINC_BIT);
 
 
     /* 9. Direct mode or fifo mode */
-    io_writeMask((void *)DMA_SxFCR(base3), 1 << DMA_FCR_DMDIS_BIT,
-                 MASK(1) <<DMA_FCR_DMDIS_BIT);
+    io_writeMask(DMA_SxFCR(base3), 1 << DMA_FCR_DMDIS_BIT,
+                 MASK(1) << DMA_FCR_DMDIS_BIT);
 
     /* 10. Select the fifo threshold */
-    io_writeMask((void *)DMA_SxFCR(base3), 3 << DMA_FCR_FTH_BIT,
-                 MASK(2) <<DMA_FCR_FTH_BIT);
+    io_writeMask(DMA_SxFCR(base3), 3 << DMA_FCR_FTH_BIT,
+                 MASK(2) << DMA_FCR_FTH_BIT);
 
     /* 11. Enable the circular mode if required */
 
@@ -190,60 +188,49 @@ void dma1_init(void)
 }
 
 /* IRQ handler for DMA1 stream3 */
-void DMA1_Stream3_IRQHandler(void)
-{
+void DMA1_Stream3_IRQHandler(void) {
     u32 base = dma_getBase(DMA1);
-    if((io_read((void *)DMA_LISR(base)) >> DMA_LISR_HTIF3_BIT) & 1) {
-        io_write((void *)DMA_LIFCR(base), 1 << DMA_LIFCR_HTIF3_BIT);
+    if ((io_read(DMA_LISR(base)) >> DMA_LISR_HTIF3_BIT) & 1) {
+        io_write(DMA_LIFCR(base), 1 << DMA_LIFCR_HTIF3_BIT);
         dma_htCallback();
-    }
-    else if((io_read((void *)DMA_LISR(base)) >> DMA_LISR_TCIF3_BIT) & 1) {
-        io_write((void *)DMA_LIFCR(base), 1 << DMA_LIFCR_TCIF3_BIT);
+    } else if ((io_read(DMA_LISR(base)) >> DMA_LISR_TCIF3_BIT) & 1) {
+        io_write(DMA_LIFCR(base), 1 << DMA_LIFCR_TCIF3_BIT);
         dma_ftCallback();
-    }
-    else if((io_read((void *)DMA_LISR(base)) >> DMA_LISR_TEIF3_BIT) & 1) {
-        io_write((void *)DMA_LIFCR(base), 1 << DMA_LIFCR_TEIF3_BIT);
+    } else if ((io_read(DMA_LISR(base)) >> DMA_LISR_TEIF3_BIT) & 1) {
+        io_write(DMA_LIFCR(base), 1 << DMA_LIFCR_TEIF3_BIT);
         dma_teCallback();
-    }
-    else if((io_read((void *)DMA_LISR(base)) >> DMA_LISR_FEIF3_BIT) & 1) {
-        io_write((void *)DMA_LIFCR(base), 1 << DMA_LIFCR_FEIF3_BIT);
+    } else if ((io_read(DMA_LISR(base)) >> DMA_LISR_FEIF3_BIT) & 1) {
+        io_write(DMA_LIFCR(base), 1 << DMA_LIFCR_FEIF3_BIT);
         dma_feCallback();
-    }
-    else if((io_read((void *)DMA_LISR(base)) >> DMA_LISR_DMEIF3_BIT) & 1) {
-        io_write((void *)DMA_LIFCR(base), 1 << DMA_LIFCR_DMEIF3_BIT);
+    } else if ((io_read(DMA_LISR(base)) >> DMA_LISR_DMEIF3_BIT) & 1) {
+        io_write(DMA_LIFCR(base), 1 << DMA_LIFCR_DMEIF3_BIT);
         dma_dmeCallback();
-    }
-    else
+    } else
         return;
 }
 
-void dma_htCallback(void)
-{
+void dma_htCallback(void) {
 
 }
 
-void dma_ftCallback(void)
-{
+void dma_ftCallback(void) {
     u32 base = dma_getStreamBase(DMA1, 3);
-    io_write((void *) DMA_SxNDTR(base), DMA_MAX_STRLEN);
+    io_write(DMA_SxNDTR(base), DMA_MAX_STRLEN);
 
-    io_writeMask((void *)USART_CR3(USART3_BASE), 0 << USART_CR3_DMAT_BIT,
+    io_writeMask(USART_CR3(USART3_BASE), 0 << USART_CR3_DMAT_BIT,
                  1 << USART_CR3_DMAT_BIT);
 
     dma_enStreamX(DMA1, DMA_STREAM3);
 }
 
-void dma_teCallback(void)
-{
-    while(1);
+void dma_teCallback(void) {
+    while (1);
 }
 
-void dma_dmeCallback(void)
-{
-    while(1);
+void dma_dmeCallback(void) {
+    while (1);
 }
 
-void dma_feCallback(void)
-{
-    while(1);
+void dma_feCallback(void) {
+    while (1);
 }

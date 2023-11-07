@@ -39,11 +39,12 @@
 
 #define USART_RQR_RXFRQ_BIT         (3)
 
-extern char DMA_DATA_STREAM[DMA_MAX_STRLEN];
+#define USART3_IRQ_NO               (39)
+
+extern char DMA_TX_DATA_STREAM[DMA_MAX_STRLEN];
 
 /* USART3 initialization */
-void usart_init(void)
-{
+void usart_init(void) {
     u32 base = USART3_BASE;
     u32 val = 0;
     u32 mask = 0;
@@ -51,7 +52,7 @@ void usart_init(void)
     /* 1. Enable the peripheral clock for the USART3 Peripheral */
     val = 1 << RCC_USART3_PIN;
     mask = MASK(1) << RCC_USART3_PIN;
-    io_writeMask((void *) RCC_APB1ENR, val, mask);
+    io_writeMask(RCC_APB1ENR, val, mask);
 
     /* 2. Configure the gpio pins for uart tx/rx
      * */
@@ -72,7 +73,7 @@ void usart_init(void)
     gpio_setPuPd(GPIOD, USART3_RX, GPIO_OUTPUT_Pull_UP);
 
     /* 3. Baudrate setup */
-    io_write((void *)USART_BRR(base), (DEFAULT_FCLK / BAUDRATE) + 1);
+    io_write(USART_BRR(base), (DEFAULT_FCLK / BAUDRATE) + 1);
 
     /* 4. Configure the data width, no of stop bits etc.
      *    <Default configuration meets our requirement>
@@ -82,65 +83,64 @@ void usart_init(void)
      * */
     val = 1 << USART_CR1_EN_BIT;
     mask = MASK(1) << USART_CR1_EN_BIT;
-    io_writeMask((void *)USART_CR1(base), val, mask);
+    io_writeMask(USART_CR1(base), val, mask);
 
     /* 6. USART Tx enable and Rx enable
      * */
-    val = (1 << USART_CR1_RE_BIT) | ( 1 << USART_CR1_TE_BIT);
+    val = (1 << USART_CR1_RE_BIT) | (1 << USART_CR1_TE_BIT);
     mask = (MASK(1) << USART_CR1_RE_BIT) | (MASK(1) << USART_CR1_TE_BIT);
-    io_writeMask((void *)USART_CR1(base), val, mask);
+    io_writeMask(USART_CR1(base), val, mask);
 }
 
 /* USART reset */
-void usart_reset(void)
-{
-    io_writeMask((void *)RCC_APB1RSTR, 1 << RCC_USART3_PIN, 1 << RCC_USART3_PIN);
-    io_writeMask((void *)RCC_APB1RSTR, 0 << RCC_USART3_PIN, 1 << RCC_USART3_PIN);
+void usart_reset(void) {
+    io_writeMask(RCC_APB1RSTR, 1 << RCC_USART3_PIN, 1 << RCC_USART3_PIN);
+    io_writeMask(RCC_APB1RSTR, 0 << RCC_USART3_PIN, 1 << RCC_USART3_PIN);
 }
 
 /* send n-bytes data */
-void usart_txData(u8 *ptr_tx_buffer)
-{
+void usart_txData(u8 *ptr_tx_buffer) {
     u32 base = USART3_BASE;
 
-    while(*(ptr_tx_buffer))
-    {
+    while (*(ptr_tx_buffer)) {
         /* 1. Make sure the interrupt and status register, the TXE(bit[7]) is set
          *    If TXE is 1, put the byte
          *    Here, we are waiting for the io_read value
          * */
-        while( !(io_read((void *)USART_ISR(base)) & (MASK(1) << USART_ISR_TXE_BIT)) );
+        while (!(io_read(USART_ISR(base)) & (MASK(1) << USART_ISR_TXE_BIT)));
 
         /* 2. write the data to uart tx data register
          * */
-        io_write((void *)USART_TDR(base), *(ptr_tx_buffer++) & MASK(8));
+        io_write(USART_TDR(base), *(ptr_tx_buffer++) & MASK(8));
 
         /* 3. waiting for the tx transmission complete (TXC)
          * */
-        while( !(io_read((void *)USART_ISR(base)) & (MASK(1) << USART_ISR_TXC_BIT)) );
+        while (!(io_read(USART_ISR(base)) & (MASK(1) << USART_ISR_TXC_BIT)));
     }
 }
 
-void put_c(char *ptr_tx_buffer)
-{
-    usart_txData((u8 *)ptr_tx_buffer);
+void put_c(char c) {
+    usart_txData((u8 *) &c);
 }
 
 /* receive 1 byte data */
-u8 usart_rxData(void)
-{
+u8 usart_rxData(void) {
     u8 data;
     u32 base = USART3_BASE;
     /* 1. Waiting for the transmit data to USART_RDR register
      *    (USART_ISR bit[5] RXNE)
      * */
-    while( !(io_read((void *)USART_ISR(base)) & (MASK(1) << USART_ISR_RXNE_BIT)) );
+    while (!(io_read(USART_ISR(base)) & (MASK(1) << USART_ISR_RXNE_BIT)));
 
     /* 2. Receive data */
-    data = (u8) io_read((void *) USART_RDR(base)) & MASK(8);
+    data = (u8) io_read(USART_RDR(base)) & MASK(8);
 
     /* 3. Clear the RXNE by USART_RQR (bit[3]) */
-    io_write((void *)USART_RQR(base), MASK(1) << USART_RQR_RXFRQ_BIT);
+    io_write(USART_RQR(base), MASK(1) << USART_RQR_RXFRQ_BIT);
 
     return data;
+}
+
+void USART3_IRQHandler(void) {
+
 }

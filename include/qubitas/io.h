@@ -3,8 +3,10 @@
 
 #include <qubitas/type.h>
 
-void io_write(void *addr, u32 val);
-u32 io_read(void *addr);
-void io_writeMask(void *addr, u32 val, u32 mask);
+void io_write(u32 addr, u32 val);
+
+u32 io_read(u32 addr);
+
+void io_writeMask(u32 addr, u32 val, u32 mask);
 
 #endif

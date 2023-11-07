@@ -3,6 +3,7 @@
 #include <qubitas/uart.h>
 #include <qubitas/io.h>
 #include <qubitas/dma.h>
+#include <qubitas/string.h>
 
 #define RCC_BASE                    (0x40023800UL)
 #define RCC_AHB1ENR(base)           (base + 0x30UL)
@@ -20,34 +21,30 @@
 #define USART_CR3(base)             (base + 0x08UL)
 #define USART_CR3_DMAT_BIT          (7)
 
-extern char DMA_DATA_STREAM[DMA_MAX_STRLEN];
+extern char DMA_TX_DATA_STREAM[DMA_MAX_STRLEN];
 
-void syscfg_init(void)
-{
+void syscfg_init(void) {
     u32 base = RCC_BASE;
-    u32 data = io_read((void *)RCC_APB2ENR(base));
+    u32 data = io_read(RCC_APB2ENR(base));
     data |= (1 << 14);
-    io_write((void *)RCC_APB2ENR(base), data);
+    io_write(RCC_APB2ENR(base), data);
 }
 
-void clear_exti_pending_bit(int pin_number)
-{
+void clear_exti_pending_bit(int pin_number) {
     u32 addr = EXTI_PR(EXTI_BASE);
 
-    if(io_read((void *)addr) & (1 << pin_number))
-    {
+    if (io_read(addr) & (1 << pin_number)) {
         /* write 1 clear */
-        io_write((void *)addr, 1 << pin_number);
+        io_write(addr, 1 << pin_number);
     }
 }
 
-void EXTI15_10_IRQHandler(void)
-{
-//    char str[] = "Interrupt\r\n\r\n";
-//    strncpy(DMA_DATA_STREAM, str, 60);
-    io_writeMask((void *)USART_CR3(USART3_BASE), 1 << USART_CR3_DMAT_BIT,
+void EXTI15_10_IRQHandler(void) {
+    char str[] = "User Button Interrupt\r\n";
+    strncpy(DMA_TX_DATA_STREAM, str, 60);
+    io_writeMask(USART_CR3(USART3_BASE), 1 << USART_CR3_DMAT_BIT,
                  1 << USART_CR3_DMAT_BIT);
-//    strncpy(DMA_DATA_STREAM, str, 60);
-//    usart_txData((u8 *)DMA_DATA_STREAM);
+//    strncpy(DMA_TX_DATA_STREAM, str, 60);
+//    usart_txData((u8 *)DMA_TX_DATA_STREAM);
     clear_exti_pending_bit(13);
 }

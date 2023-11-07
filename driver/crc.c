@@ -13,14 +13,12 @@
 #define CRC_INIT *(__vo u32 *) 0x40023010U
 
 /* CRC hardware reset */
-void crc_reset(void)
-{
+void crc_reset(void) {
     CRC_CR |= 1 << 0;
 }
 
 /* CRC initialization */
-void crc_init(void)
-{
+void crc_init(void) {
     /* CRC RCC enable */
     RCC_AHB1ENR |= 1 << 6;
     /* reset CRC */
@@ -28,8 +26,7 @@ void crc_init(void)
 }
 
 /* compute CRC value */
-u32 crc_compute(u32 input)
-{
+u32 crc_compute(u32 input) {
     CRC_DR = input;
     return CRC_DR;
 }
