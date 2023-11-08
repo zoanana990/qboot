@@ -6,12 +6,10 @@
 #define C_TO_D(c)               ((c) - '0')
 #define MAXBUF                  (sizeof(int) * 8)
 
-#define PRINT_TRUNCATES      FALSE
-
 typedef void (*putc)(char);
 
 /*************************************************************************
- * _vsnprintf
+ * _do_print
  *
  * What do we support ?
  * %d:      Decimal conversion
@@ -41,9 +39,6 @@ static void _do_print(register const char *fmt, va_list *argp, putc out) {
 
     /* alternative format */
     bool altfmt;
-
-    /* need to truncate ? */
-    bool truncate;
 
     u32 u;
     s32 n;
@@ -122,24 +117,20 @@ static void _do_print(register const char *fmt, va_list *argp, putc out) {
         if (c == 'l')
             c = *++fmt;
 
-        truncate = FALSE;
         capitals = 0;
 
         switch (c) {
             case 'p':
                 altfmt = TRUE;
             case 'x':
-                truncate = PRINT_TRUNCATES;
                 base = 16;
                 goto print_unsigned;
 
             case 'u':
-                truncate = PRINT_TRUNCATES;
                 base = 10;
                 goto print_unsigned;
 
             case 'd':
-                truncate = PRINT_TRUNCATES;
                 base = 10;
                 goto print_signed;
 
@@ -181,7 +172,6 @@ static void _do_print(register const char *fmt, va_list *argp, putc out) {
                 while (*p != '\0') {
                     if (++n > precision || (length > 0 && n > length))
                         break;
-
                     out(*p++);
                 }
 
@@ -191,7 +181,6 @@ static void _do_print(register const char *fmt, va_list *argp, putc out) {
                         n++;
                     }
                 }
-
                 break;
             }
 
@@ -271,14 +260,18 @@ static void _do_print(register const char *fmt, va_list *argp, putc out) {
 /**************************************
  * EXPORT API
  **************************************/
+__attribute__((weak)) void put_c(char c) {
+}
 
 int printk(char *format, ...) {
     va_list va;
     va_start(va, format);
     _do_print(format, &va, put_c);
+    va_end(va);
     return 0;
 }
 
 int sprintk(char *buffer, char *format, ...) {
+    /* TODO */
     return 0;
 }
