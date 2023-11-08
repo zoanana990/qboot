@@ -24,3 +24,11 @@ u32 io_read(u32 addr) {
 void io_writeMask(u32 addr, u32 val, u32 mask) {
     io_write(addr, (io_read(addr) & ~(mask)) | (val & mask));
 }
+
+u32 io_readBit(u32 addr, u32 bit) {
+    return (io_read(addr) >> bit) & 1;
+}
+
+void io_writeBit(u32 addr, u32 bit) {
+    io_writeMask(addr, 1 << bit, 1 << bit);
+}
