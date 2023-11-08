@@ -5,6 +5,7 @@
 #include <qubitas/io.h>
 #include <qubitas/printk.h>
 #include <qubitas/dma.h>
+#include <qubitas/nvic.h>
 
 #define DEFAULT_FCLK                (16000000U)
 #define BAUDRATE                    (115200U)
@@ -20,9 +21,12 @@
 #define USART3_BASE                 (0x40004800UL)
 
 #define USART_CR1(base)             (base + 0x00UL)
+#define USART_CR2(base)             (base + 0x04UL)
+#define USART_CR3(base)             (base + 0x08UL)
 #define USART_BRR(base)             (base + 0x0CUL)
 #define USART_RQR(base)             (base + 0x18UL)
 #define USART_ISR(base)             (base + 0x1CUL)
+#define USART_ICR(base)             (base + 0x20UL)
 #define USART_RDR(base)             (base + 0x24UL)
 #define USART_TDR(base)             (base + 0x28UL)
 
@@ -32,6 +36,13 @@
 #define USART_CR1_EN_BIT            (0)
 #define USART_CR1_RE_BIT            (2)
 #define USART_CR1_TE_BIT            (3)
+#define USART_CR1_RXNEIE_BIT        (5)
+#define USART_CR1_RTOIE_BIT         (26)
+
+#define USART_CR2_RTOEN_BIT         (23)
+
+#define USART_CR3_EIE_BIT           (0)
+#define USART_CR3_DMAR_BIT          (6)
 
 #define USART_ISR_TXE_BIT           (7)
 #define USART_ISR_TXC_BIT           (6)
@@ -46,8 +57,8 @@ extern char DMA_TX_DATA_STREAM[DMA_MAX_STRLEN];
 /* USART3 initialization */
 void usart_init(void) {
     u32 base = USART3_BASE;
-    u32 val = 0;
-    u32 mask = 0;
+    u32 val;
+    u32 mask;
 
     /* 1. Enable the peripheral clock for the USART3 Peripheral */
     val = 1 << RCC_USART3_PIN;
@@ -141,6 +152,20 @@ u8 usart_rxData(void) {
     return data;
 }
 
-void USART3_IRQHandler(void) {
 
+void uart_receiveDma(void)
+{
+    /* 1. Waiting for USART RX ready */
+    while (!(io_read(USART_ISR(USART3_BASE)) & (MASK(1) << USART_ISR_RXNE_BIT)));
+
+    /* 2. Enable receiver timeout enable */
+    if(io_readBit(USART_CR2(USART3_BASE), USART_CR2_RTOEN_BIT)) {
+        io_writeBit(USART_CR1(USART3_BASE), USART_CR1_RTOIE_BIT);
+    }
+
+    /* 3. Enable the DMA channel */
+
+    /*4. Enable the uart error interrupt, DMAR, EIE */
+    io_writeMask(USART_CR3(USART3_BASE), 1 << USART_CR3_EIE_BIT, 1 << USART_CR3_EIE_BIT);
+    io_writeMask(USART_CR3(USART3_BASE), 1 << USART_CR3_DMAR_BIT, 1 << USART_CR3_DMAR_BIT);
 }

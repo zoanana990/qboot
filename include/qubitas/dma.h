@@ -30,16 +30,8 @@ void dma_enStreamX(u32 dma_channel, u32 stream);
 void dma_configIntr(u32 dma_channel, u32 stream);
 
 /* DMA1 init */
-void dma1_init(void);
+void dma_initUart3Tx(void);
+void dma_initUart3Rx(void);
 
-void dma_htCallback(void);
-
-void dma_ftCallback(void);
-
-void dma_teCallback(void);
-
-void dma_dmeCallback(void);
-
-void dma_feCallback(void);
 
 #endif

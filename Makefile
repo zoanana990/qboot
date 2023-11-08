@@ -28,7 +28,8 @@ main.c \
 
 # ASM sources
 ASM_SOURCES =  \
-startup_stm32f746xx.s
+startup_stm32f746xx.s \
+kernel/context_switch.s
 
 #######################################
 # Toolchain

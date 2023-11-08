@@ -44,7 +44,6 @@ void EXTI15_10_IRQHandler(void) {
     strncpy(DMA_TX_DATA_STREAM, str, 60);
     io_writeMask(USART_CR3(USART3_BASE), 1 << USART_CR3_DMAT_BIT,
                  1 << USART_CR3_DMAT_BIT);
-//    strncpy(DMA_TX_DATA_STREAM, str, 60);
-//    usart_txData((u8 *)DMA_TX_DATA_STREAM);
+
     clear_exti_pending_bit(13);
 }
