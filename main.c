@@ -8,6 +8,7 @@
 
 extern char DMA_TX_DATA_STREAM[DMA_MAX_STRLEN];
 
+
 int main() {
     usart_init();
     crc_init();
@@ -17,11 +18,12 @@ int main() {
     dma_configIntr(DMA1, DMA_STREAM3);
     dma_enStreamX(DMA1, DMA_STREAM3);
 
-    printk(INFO "Kernel Compile time %s\r\n", __DATE__);
-    printk(WARNING "Start kernel... \r\n");
-    printk(DEBUG "Qubitas Bootloader @Copyright\r\n");
+    pr_info("Start kernel... \r\n");
+    pr_info("Qubitas Bootloader @Copyright\r\n");
 
-    while (1);
+    while (1) {
+        put_c(usart_rxByte());
+    }
 
     /* not expect to go here */
     return 0;

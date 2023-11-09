@@ -110,32 +110,24 @@ void usart_reset(void) {
 }
 
 /* send n-bytes data */
-void usart_txData(u8 *ptr_tx_buffer) {
-    u32 base = USART3_BASE;
+void usart_txByte(s8 c) {
+    /* 1. Make sure the interrupt and status register, the TXE(bit[7]) is set
+     *    If TXE is 1, put the byte
+     *    Here, we are waiting for the io_read value
+     * */
+    while (!(io_read(USART_ISR(USART3_BASE)) & (MASK(1) << USART_ISR_TXE_BIT)));
 
-    while (*(ptr_tx_buffer)) {
-        /* 1. Make sure the interrupt and status register, the TXE(bit[7]) is set
-         *    If TXE is 1, put the byte
-         *    Here, we are waiting for the io_read value
-         * */
-        while (!(io_read(USART_ISR(base)) & (MASK(1) << USART_ISR_TXE_BIT)));
+    /* 2. write the data to uart tx data register
+     * */
+    io_write(USART_TDR(USART3_BASE), c & MASK(8));
 
-        /* 2. write the data to uart tx data register
-         * */
-        io_write(USART_TDR(base), *(ptr_tx_buffer++) & MASK(8));
-
-        /* 3. waiting for the tx transmission complete (TXC)
-         * */
-        while (!(io_read(USART_ISR(base)) & (MASK(1) << USART_ISR_TXC_BIT)));
-    }
-}
-
-void put_c(char c) {
-    usart_txData((u8 *) &c);
+    /* 3. waiting for the tx transmission complete (TXC)
+     * */
+    while (!(io_read(USART_ISR(USART3_BASE)) & (MASK(1) << USART_ISR_TXC_BIT)));
 }
 
 /* receive 1 byte data */
-u8 usart_rxData(void) {
+u8 usart_rxByte(void) {
     u8 data;
     u32 base = USART3_BASE;
     /* 1. Waiting for the transmit data to USART_RDR register
@@ -152,14 +144,26 @@ u8 usart_rxData(void) {
     return data;
 }
 
+/* send n-bytes data */
+void usart_txData(u8 *ptr_tx_buffer) {
+    while (*(ptr_tx_buffer)) {
+        usart_txByte(*(ptr_tx_buffer++));
+    }
+}
 
-void uart_receiveDma(void)
-{
+void put_c(char c) {
+    usart_txByte(c);
+    if(c == '\n') {
+        usart_txData((u8 *)"\r\n");
+    }
+}
+
+void uart_receiveDma(void) {
     /* 1. Waiting for USART RX ready */
     while (!(io_read(USART_ISR(USART3_BASE)) & (MASK(1) << USART_ISR_RXNE_BIT)));
 
     /* 2. Enable receiver timeout enable */
-    if(io_readBit(USART_CR2(USART3_BASE), USART_CR2_RTOEN_BIT)) {
+    if (io_readBit(USART_CR2(USART3_BASE), USART_CR2_RTOEN_BIT)) {
         io_writeBit(USART_CR1(USART3_BASE), USART_CR1_RTOIE_BIT);
     }
 
