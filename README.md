@@ -10,17 +10,18 @@ This is a simple bootloader for exercise
   simplied the code and support multi-devices
 
 ## Features
+
 - [x] `printk`
 - [ ] `scanf`: implement by DMA
-  - [ ] usart interrupt
-  - [ ] usart DMA
-  - [ ] scanf
+    - [ ] usart interrupt
+    - [ ] usart DMA
+    - [ ] scanf
 - [ ] context switch
 - [ ] some important data structure
 - [ ] malloc
 - [ ] task and thread
-  - [ ] task
-  - [ ] thread
+    - [ ] task
+    - [ ] thread
 - [ ] scheduler
-  - [ ] Round Robin
-  - [ ] CFS
+    - [ ] Round Robin
+    - [ ] CFS
