@@ -48,6 +48,10 @@
 #define USART_ISR_TXC_BIT           (6)
 #define USART_ISR_RXNE_BIT          (5)
 
+#define USART_ICR_IDLECF_BIT        (4)
+#define USART_ICR_TCCF_BIT          (6)
+#define USART_ICR_RTOCF_BIT         (11)
+
 #define USART_RQR_RXFRQ_BIT         (3)
 
 #define USART3_IRQ_NO               (39)
@@ -101,6 +105,10 @@ void usart_init(void) {
     val = (1 << USART_CR1_RE_BIT) | (1 << USART_CR1_TE_BIT);
     mask = (MASK(1) << USART_CR1_RE_BIT) | (MASK(1) << USART_CR1_TE_BIT);
     io_writeMask(USART_CR1(base), val, mask);
+
+    /* 7. Enable RXNE interrupt */
+    io_writeBit(USART_CR1(base), USART_CR1_RXNEIE_BIT);
+    nvic_enIrq(USART3_IRQ_NO);
 }
 
 /* USART reset */
@@ -154,22 +162,29 @@ void usart_txData(u8 *ptr_tx_buffer) {
 void put_c(char c) {
     usart_txByte(c);
     if(c == '\n') {
-        usart_txData((u8 *)"\r\n");
+        usart_txData((u8 *)"\r");
     }
 }
 
 void uart_receiveDma(void) {
-    /* 1. Waiting for USART RX ready */
-    while (!(io_read(USART_ISR(USART3_BASE)) & (MASK(1) << USART_ISR_RXNE_BIT)));
+    /* TODO: USE DMA method */
+}
 
-    /* 2. Enable receiver timeout enable */
-    if (io_readBit(USART_CR2(USART3_BASE), USART_CR2_RTOEN_BIT)) {
-        io_writeBit(USART_CR1(USART3_BASE), USART_CR1_RTOIE_BIT);
+void USART3_IRQHandler(void) {
+    u8 data = usart_rxByte();
+
+    /* TODO: command line parser */
+    switch (data) {
+        case '\r':
+            printk("\r\n");
+            break;
+        case '\b':
+            put_c(data);
+            put_c(' ');
+            put_c(data);
+            break;
+        default:
+            put_c(data);
+            break;
     }
-
-    /* 3. Enable the DMA channel */
-
-    /*4. Enable the uart error interrupt, DMAR, EIE */
-    io_writeMask(USART_CR3(USART3_BASE), 1 << USART_CR3_EIE_BIT, 1 << USART_CR3_EIE_BIT);
-    io_writeMask(USART_CR3(USART3_BASE), 1 << USART_CR3_DMAR_BIT, 1 << USART_CR3_DMAR_BIT);
 }
