@@ -108,6 +108,4 @@ static inline void list_addTail(struct list_node *node, struct list_node *head) 
 #define list_enterLast(head, type, member) list_entry(head->prev, type, member)
 
 
-
-
 #endif

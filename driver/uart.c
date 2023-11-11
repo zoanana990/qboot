@@ -161,8 +161,8 @@ void usart_txData(u8 *ptr_tx_buffer) {
 
 void put_c(char c) {
     usart_txByte(c);
-    if(c == '\n') {
-        usart_txData((u8 *)"\r");
+    if (c == '\n') {
+        usart_txData((u8 *) "\r");
     }
 }
 

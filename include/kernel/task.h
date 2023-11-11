@@ -7,9 +7,12 @@ typedef void (*task_handler_t)(void);
 
 struct task {
     /* process stack pointer value */
+    char name[16];
     u32 psp_value;
     u32 block_count;
     u32 current_state;
+    u32 stack_size;
+    u32 *ptr_stack;
     task_handler_t task_handler;
 };
 
@@ -20,6 +23,8 @@ enum {
     TASK_STATE_PENDING,
 };
 
-void task_create(void);
+errno task_create(void *);
+
+errno task_addToReadyList(struct task *ptr_task);
 
 #endif

@@ -98,13 +98,13 @@ void task_delay(u32 tick_count) {
     user_task[current_task].current_state = TASK_STATE_BLOCK;
 }
 
-void enable_systick_timer(void){
+void enable_systick_timer(void) {
     io_write(SYST_CSR, (1 << SYSTICK_CSR_EN_BIT) |
                        (1 << SYSTICK_CSR_INTR_EN_BIT) |
                        (1 << SYSTICK_CSR_CLK_SRC_BIT));
 }
 
-void disable_systick_timer(void){
+void disable_systick_timer(void) {
     io_write(SYST_CSR, 0);
 }
 
@@ -143,7 +143,7 @@ void task4_handler(void) {
 void __attribute__((naked)) init_scheduler_stack(u32 sched_top_of_stack) {
 
 
-    __asm__ __vo("MSR MSP, %0":: "r"(sched_top_of_stack):);
+    __asm__ __vo("MSR MSP, %0"::"r"(sched_top_of_stack):);
 
     /**
      * BX instruction: Branch and exchange
@@ -169,7 +169,7 @@ void init_task_stack(void) {
     u32 *ptr_psp;
     for (int i = 0; i < MAX_TASKS; i++) {
         user_task[i].current_state = TASK_STATE_RUNNING;
-        ptr_psp = (u32 *)user_task[i].psp_value;
+        ptr_psp = (u32 *) user_task[i].psp_value;
 
         /* 0x00100000 */
         ptr_psp--;
@@ -184,8 +184,7 @@ void init_task_stack(void) {
         *ptr_psp = 0xFFFFFFFD;
 
         /* Initialize General purpose register */
-        for(int j = 0; j < 13; j++)
-        {
+        for (int j = 0; j < 13; j++) {
             ptr_psp--;
             *ptr_psp = 0;
         }
@@ -315,15 +314,15 @@ void SysTick_Handler(void) {
 
 void MemManage_Handler(void) {
     pr_excp("MemManage Handler... \r\n");
-    while(1);
+    while (1);
 }
 
 void BusFault_Handler(void) {
     pr_excp("BusFault Handler... \r\n");
-    while(1);
+    while (1);
 }
 
 void UsageFault_Handler(void) {
     pr_excp("UsageFault Handler... \r\n");
-    while(1);
+    while (1);
 }

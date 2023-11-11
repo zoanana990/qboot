@@ -13,4 +13,8 @@ u32 io_readBit(register u32 addr, register u32 bit);
 
 void io_writeBit(register u32 addr, register u32 bit);
 
+/* printf */
+
+/* scanf */
+
 #endif

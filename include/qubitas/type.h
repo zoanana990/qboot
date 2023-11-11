@@ -18,6 +18,13 @@ typedef s32 ssize_t;
 
 typedef signed int bool;
 
+typedef enum {
+    ERRNO_OK = 0,
+    ERRNO_NOMEM,
+    ERRNO_NOT_SUP,
+    ERRNO_OP_INVALID
+} errno;
+
 #ifdef __QUBITAS__
 typedef __builtin_va_list va_list;
 #define va_start(v, l)              __builtin_va_start(v, l)

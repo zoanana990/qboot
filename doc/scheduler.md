@@ -96,23 +96,28 @@ and there is the memory layout:
 6. Run T2
 
 ### Detail Step
+
 ![img.png](saving_context.png)
-Here, we need to save the value of `PSP`. Because it is required later when processor needs to resume the execution of T1
+Here, we need to save the value of `PSP`. Because it is required later when processor needs to resume the execution of
+T1
 by retrieving its saved state.
 
 ### Task's stack area init and storing of dummy SF
+
 - Each task can consume a maximum of 1kB of memory as a private stack
 - This stack is used to hold tasks local variables and context (SF1 + SF2)
 - When a task is getting scheduled for the very first time, it doesn't have any context. So, the programmer should store
   dummy SF1 and SF2 in Task's stack area as a part of task initialization sequence before launching the scheduler
 
 ### How to set the register
+
 - Process Stack Register (`xPSR`)
-  - `EPSR`: bit[24] is t bit, we only need to care of this bit, thumb state
+    - `EPSR`: bit[24] is t bit, we only need to care of this bit, thumb state
 - Return address (`PC`)
-  - We need to store the address of handler, if we need to switch to t2, we need to store the task 2 address, and make sure the lsb is 1
+    - We need to store the address of handler, if we need to switch to t2, we need to store the task 2 address, and make
+      sure the lsb is 1
 - Link Register (`LR`), exception return register
-  
+
 Exception return register
 
 | EXC_RETURN | Return to    | Return stack  |
@@ -124,7 +129,9 @@ Exception return register
 We will use  `0xFFFFFFFD` this one to be the execution return address
 
 ### Inline assembly format
+
 Example: inline assembly add a, b
+
 ```c
 __asm__ (
 "add %1, %0;"  // Add the value in operand 1 to operand 0
@@ -134,35 +141,45 @@ __asm__ (
 ```
 
 ## Blocking state
-- When a task has got nothing to do, it should simply call a delay function which should put the task into blocked state from
+
+- When a task has got nothing to do, it should simply call a delay function which should put the task into blocked state
+  from
   running state until the specified delay is elapsed
 - We should now maintain 2 states for a task. Running and blocked
 - The scheduler should schedule only those tasks which are in running state
-- The scheduler also should unblock the blocked tasks if their blocking period is over and put them back to running state
+- The scheduler also should unblock the blocked tasks if their blocking period is over and put them back to running
+  state
 - Now, we can create a structure, that is task control block, `struct tcb`
 
 ## How to block a task ?
 
 ### Block task for a given number of ticks
-- Let's introduce a function called `task_delay` which puts the calling task to the blocked state for a given number of ticks
-- E.g., `task_delay(1000)`; if a task calls this function then `task_delay` function puts the task into blocked state and
+
+- Let's introduce a function called `task_delay` which puts the calling task to the blocked state for a given number of
+  ticks
+- E.g., `task_delay(1000)`; if a task calls this function then `task_delay` function puts the task into blocked state
+  and
   allows the next task to run on the CPU
-- Here, the number 1000 denotes a block period in terms of ticks, the task who calls this function is going to block for 1000
+- Here, the number 1000 denotes a block period in terms of ticks, the task who calls this function is going to block for
+  1000
   ticks (systick exceptions), i.e., for 1000 ms since each tick happens for every 1 ms
-- The scheduler should check elapsed block period of each blocked task and put them back to running state if the block period is over
+- The scheduler should check elapsed block period of each blocked task and put them back to running state if the block
+  period is over
 
 ### idle task
-- What if all the tasks are blocked ? who is going to run on the CPU ?
-  - We will use the idle task to run on the CPU if all the tasks are blocked.
-  - The idle task is like user tasks but only runs when all user tasks are blocked, and you can put the CPU to sleep
 
-### Global tick count 
+- What if all the tasks are blocked ? who is going to run on the CPU ?
+    - We will use the idle task to run on the CPU if all the tasks are blocked.
+    - The idle task is like user tasks but only runs when all user tasks are blocked, and you can put the CPU to sleep
+
+### Global tick count
+
 - TODO: timer interrupt, watchdog timer interrupt
 - How does the scheduler decide when to put the blocked state tasks back to the running state ?
 - It has to compare the task's delay tick count with a global tick count
 - So, the scheduler should maintain a global tick count and update it for every systick exception
 
-
 ## Reference
+
 - [Extended Asm - Assembler Instructions with C Expression Operands](https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html#Input-Operands)
 - [Arm m7 architecture reference manual](https://developer.arm.com/documentation/ddi0403/latest/)

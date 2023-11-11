@@ -12,7 +12,7 @@ BUILD_DIR = build
 ######################################
 # source
 ######################################
-APP = TEST
+APP = 0
 
 # Driver code
 DRIVER_SOURCES = \
@@ -31,25 +31,25 @@ lib/printk.c \
 
 # Memory code
 MM_SOURCES = \
-mm/heap.c
+mm/heap.c \
+mm/mm.c \
 
 # Kernel code
 KERNEL_SOURCES = \
 kernel/list.c \
 kernel/task.c
 
-C_SOURCES =
+C_SOURCES += $(DRIVER_SOURCES)
+C_SOURCES += $(LIB_SOURCES)
+C_SOURCES += $(MM_SOURCES)
 
 ifeq ($(APP), TEST)
 C_SOURCES += ./test_code/context_switch/main.c
 else
-C_SOURCES += main.c
+
 endif
 
-C_SOURCES += $(DRIVER_SOURCES)
-C_SOURCES += $(LIB_SOURCES)
-C_SOURCES += $(MM_SOURCES)
-C_SOURCES += $(KERNEL_SOURCES)
+C_SOURCES += main.c
 
 # ASM sources
 ASM_SOURCES =  \

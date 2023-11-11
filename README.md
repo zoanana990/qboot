@@ -9,11 +9,18 @@ This is a simple bootloader for exercise
   the [bootloader course](https://www.udemy.com/course/stm32f4-arm-cortex-mx-custom-bootloader-development/learn/lecture/10026148#overview),
   simplied the code and support multi-devices
 
-## 
+## Getting Start
+
+### Environment Setup
+
+```shell
+
+```
 
 ## Directory architecture
 
 ## Features
+
 - [x] `printk`
 - [ ] `scanf`: implement by DMA
     - [ ] usart interrupt
@@ -30,3 +37,5 @@ This is a simple bootloader for exercise
     - [ ] Round Robin
 
 ## Reference
+
+- [malloc](https://github.com/exsourcode/csapp/tree/master/code/vm)
