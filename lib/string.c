@@ -10,6 +10,7 @@ char *strncpy(char *dst, const char *src, register size_t n) {
 
         do {
             if ((*d++ = *s++) == 0) {
+
                 /* NULL pad the remaining n-1 bytes */
                 while (--n != 0)
                     *d++ = 0;

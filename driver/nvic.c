@@ -17,5 +17,10 @@ void nvic_enIrq(u8 irq_number) {
 }
 
 void nvic_disIrq(u8 irq_number) {
+    if (irq_number > IRQ_MAX_NUMBER)
+        return;
 
+    u8 offset = irq_number >> 5;
+    u8 pos = irq_number & 31;
+    NVIC_ICER[offset] |= 1 << pos;
 }

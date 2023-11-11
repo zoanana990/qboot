@@ -31,6 +31,7 @@ void dma_configIntr(u32 dma_channel, u32 stream);
 
 /* DMA1 init */
 void dma_initUart3Tx(void);
+
 void dma_initUart3Rx(void);
 
 

@@ -3,6 +3,10 @@
 
 #include <qubitas/type.h>
 
+#define ENABLE_GLOBAL_INTERRUPT
+#define DISABLE_GLOBAL_INTERRUPT
+
+#define MEMORY_BARRIER              __asm__ __vo ("" ::: "memory")
 
 void nvic_enIrq(u8 irq_number);
 
