@@ -6,7 +6,7 @@
 #define C_TO_D(c)               ((c) - '0')
 #define MAXBUF                  (sizeof(int) * 8)
 
-typedef void (*putc)(char);
+typedef void (*putc_t)(char);
 
 /*************************************************************************
  * _do_print
@@ -21,7 +21,7 @@ typedef void (*putc)(char);
  * %-m.n    left adjustment
  *
  *************************************************************************/
-static void _do_print(register const char *fmt, va_list *argp, putc out) {
+static void _do_print(register const char *fmt, va_list *argp, putc_t out) {
     register char c;
     s32 length;
     s32 plus_sign;
@@ -261,6 +261,11 @@ static void _do_print(register const char *fmt, va_list *argp, putc out) {
  * EXPORT API
  **************************************/
 __attribute__((weak)) void put_c(char c) {
+
+}
+
+__attribute__((weak)) void append_c(char c) {
+
 }
 
 int printk(char *format, ...) {
