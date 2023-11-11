@@ -20,6 +20,8 @@
 #define T4_STACK_START                  (T3_STACK_START - SIZE_TASK_STACK)
 #define SCHED_STACK_START               (T4_STACK_START - SIZE_TASK_STACK)
 
+#define T_STACK_START(i)                T##i##_STACK_START
+
 /* system handler control and state register */
 #define SHCSR                           (0xE000ED24UL)
 
@@ -29,8 +31,6 @@
 
 #define SYST_CSR                        (0xE000E010UL)
 #define SYST_RVR                        (0xE000E014UL)
-#define SYST_CVR                        (0xE000E018UL)
-#define SYST_CALIB                      (0xE000E01CUL)
 
 #define SYSTICK_CSR_EN_BIT              (0)
 #define SYSTICK_CSR_INTR_EN_BIT         (1)
@@ -45,19 +45,10 @@
 /* bit[24] is thumb bit */
 #define DUMMY_XPSR                      (0x01000000UL)
 
-
-
 /***************************************
  * Global Variable
  ***************************************/
-u32 psp_of_tasks[MAX_TASKS] = {
-        T1_STACK_START,
-        T2_STACK_START,
-        T3_STACK_START,
-        T4_STACK_START
-};
-
-u32 task_handlers[MAX_TASKS];
+struct task user_task[MAX_TASKS];
 
 int current_task = 0;
 
@@ -79,6 +70,8 @@ void switch_sp_to_psp();
 
 void enable_processor_faults();
 
+void task_delay(u32 tick_count);
+
 int main() {
 
     usart_init();
@@ -89,10 +82,6 @@ int main() {
 
     init_scheduler_stack(SCHED_STACK_START);
 
-    task_handlers[0] = (u32) task1_handler;
-    task_handlers[1] = (u32) task2_handler;
-    task_handlers[2] = (u32) task3_handler;
-    task_handlers[3] = (u32) task4_handler;
 
     init_task_stack();
     init_systick_timer(TICK_HZ);
@@ -102,6 +91,10 @@ int main() {
     task1_handler();
 
     while (1);
+}
+
+void task_delay(u32 tick_count) {
+
 }
 
 void enable_systick_timer(void){
@@ -160,9 +153,22 @@ void __attribute__((naked)) init_scheduler_stack(u32 sched_top_of_stack) {
 }
 
 void init_task_stack(void) {
+
+    user_task[0].psp_value = T1_STACK_START;
+    user_task[1].psp_value = T2_STACK_START;
+    user_task[2].psp_value = T3_STACK_START;
+    user_task[3].psp_value = T4_STACK_START;
+
+    user_task[0].task_handler = task1_handler;
+    user_task[1].task_handler = task2_handler;
+    user_task[2].task_handler = task3_handler;
+    user_task[3].task_handler = task4_handler;
+
+
     u32 *ptr_psp;
     for (int i = 0; i < MAX_TASKS; i++) {
-        ptr_psp = (u32 *) psp_of_tasks[i];
+        user_task[i].current_state = TASK_STATE_RUNNING;
+        ptr_psp = (u32 *)user_task[i].psp_value;
 
         /* 0x00100000 */
         ptr_psp--;
@@ -170,7 +176,7 @@ void init_task_stack(void) {
 
         /* program counter */
         ptr_psp--;
-        *ptr_psp = task_handlers[i];
+        *ptr_psp = (u32) user_task[i].task_handler;
 
         /* Link register, return back to the process stack pointer */
         ptr_psp--;
@@ -184,7 +190,7 @@ void init_task_stack(void) {
         }
 
         /* store the process stack pointer */
-        psp_of_tasks[i] = (u32) ptr_psp;
+        user_task[i].psp_value = (u32) ptr_psp;
     }
 }
 
@@ -214,12 +220,11 @@ void enable_processor_faults() {
 }
 
 u32 get_psp_value(void) {
-
-    return psp_of_tasks[current_task];
+    return user_task[current_task].psp_value;
 }
 
 void save_psp_value(u32 stack_addr) {
-    psp_of_tasks[current_task] = stack_addr;
+    user_task[current_task].psp_value = stack_addr;
 }
 
 void __attribute__((naked)) switch_sp_to_psp() {
