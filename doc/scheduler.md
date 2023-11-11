@@ -1,7 +1,7 @@
 # Contex Switch
 
 - architecture: arm cortex m7
-- source code: [test_main.c](../test_code/test_main.c)
+- source code: [test_main.c](../test_code/context_switch.c)
 
 ## Introduction
 
@@ -132,6 +132,35 @@ __asm__ (
 : "r" (a), "0" (b)  // Input operands (a, b), b is also an earlyclobber operand
 );
 ```
+
+## Blocking state
+- When a task has got nothing to do, it should simply call a delay function which should put the task into blocked state from
+  running state until the specified delay is elapsed
+- We should now maintain 2 states for a task. Running and blocked
+- The scheduler should schedule only those tasks which are in running state
+- The scheduler also should unblock the blocked tasks if their blocking period is over and put them back to running state
+- Now, we can create a structure, that is task control block, `struct tcb`
+
+## How to block a task ?
+
+### Block task for a given number of ticks
+- Let's introduce a function called `task_delay` which puts the calling task to the blocked state for a given number of ticks
+- E.g., `task_delay(1000)`; if a task calls this function then `task_delay` function puts the task into blocked state and
+  allows the next task to run on the CPU
+- Here, the number 1000 denotes a block period in terms of ticks, the task who calls this function is going to block for 1000
+  ticks (systick exceptions), i.e., for 1000 ms since each tick happens for every 1 ms
+- The scheduler should check elapsed block period of each blocked task and put them back to running state if the block period is over
+
+### idle task
+- What if all the tasks are blocked ? who is going to run on the CPU ?
+  - We will use the idle task to run on the CPU if all the tasks are blocked.
+  - The idle task is like user tasks but only runs when all user tasks are blocked, and you can put the CPU to sleep
+
+### Global tick count 
+- TODO: timer interrupt, watchdog timer interrupt
+- How does the scheduler decide when to put the blocked state tasks back to the running state ?
+- It has to compare the task's delay tick count with a global tick count
+- So, the scheduler should maintain a global tick count and update it for every systick exception
 
 
 ## Reference

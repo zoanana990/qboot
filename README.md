@@ -9,19 +9,24 @@ This is a simple bootloader for exercise
   the [bootloader course](https://www.udemy.com/course/stm32f4-arm-cortex-mx-custom-bootloader-development/learn/lecture/10026148#overview),
   simplied the code and support multi-devices
 
-## Features
+## 
 
+## Directory architecture
+
+## Features
 - [x] `printk`
 - [ ] `scanf`: implement by DMA
     - [ ] usart interrupt
     - [ ] usart DMA
     - [ ] scanf
+- [ ] command shell
 - [ ] context switch
-- [ ] some important data structure
+- [ ] list api
 - [ ] malloc
 - [ ] task and thread
     - [ ] task
     - [ ] thread
 - [ ] scheduler
     - [ ] Round Robin
-    - [ ] CFS
+
+## Reference
