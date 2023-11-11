@@ -40,7 +40,7 @@
 #define SYSTICK_TIME_CLOCK              HSI_CLOCK
 #define TICK_HZ                         (1000U)
 
-#define MAX_TASKS                       (4)
+#define MAX_TASKS                       (5)
 
 /* bit[24] is thumb bit */
 #define DUMMY_XPSR                      (0x01000000UL)
@@ -94,7 +94,8 @@ int main() {
 }
 
 void task_delay(u32 tick_count) {
-
+    user_task[current_task].block_count = global_tick_count + tick_count;
+    user_task[current_task].current_state = TASK_STATE_BLOCK;
 }
 
 void enable_systick_timer(void){

@@ -1,6 +1,6 @@
 #include <qubitas/io.h>
 
-void io_write(u32 addr, u32 val) {
+void io_write(register u32 addr, register u32 val) {
     /**
      * r is put the value to general register
      * Qo is let the input be memory address, arm specific
@@ -9,7 +9,7 @@ void io_write(u32 addr, u32 val) {
             : : "Qo" (*(__vo u32 *) addr), "r" (val));
 }
 
-u32 io_read(u32 addr) {
+u32 io_read(register u32 addr) {
     /**
      * r is put the value to general register
      * Qo is let the input be memory address, arm specific
@@ -21,14 +21,14 @@ u32 io_read(u32 addr) {
     return val;
 }
 
-void io_writeMask(u32 addr, u32 val, u32 mask) {
+void io_writeMask(register u32 addr, register u32 val, register u32 mask) {
     io_write(addr, (io_read(addr) & ~(mask)) | (val & mask));
 }
 
-u32 io_readBit(u32 addr, u32 bit) {
+u32 io_readBit(register u32 addr, register u32 bit) {
     return (io_read(addr) >> bit) & 1;
 }
 
-void io_writeBit(u32 addr, u32 bit) {
+void io_writeBit(register u32 addr, register u32 bit) {
     io_writeMask(addr, 1 << bit, 1 << bit);
 }
