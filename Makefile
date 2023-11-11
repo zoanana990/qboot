@@ -12,37 +12,64 @@ BUILD_DIR = build
 ######################################
 # source
 ######################################
-# C sources
-C_SOURCES =  \
+APP = TEST
+
+# Driver code
+DRIVER_SOURCES = \
 driver/gpio.c \
 driver/uart.c \
 driver/crc.c \
 driver/exti.c \
 driver/dma.c \
-driver/nvic.c \
+driver/nvic.c
+
+# library code
+LIB_SOURCES = \
 lib/io.c \
 lib/string.c \
 lib/printk.c \
-main.c \
 
+# Memory code
+MM_SOURCES = \
+mm/heap.c
+
+# Kernel code
+KERNEL_SOURCES = \
+kernel/list.c \
+kernel/task.c
+
+C_SOURCES =
+
+ifeq ($(APP), TEST)
+C_SOURCES += ./test_code/context_switch/main.c
+else
+C_SOURCES += main.c
+endif
+
+C_SOURCES += $(DRIVER_SOURCES)
+C_SOURCES += $(LIB_SOURCES)
+C_SOURCES += $(MM_SOURCES)
+C_SOURCES += $(KERNEL_SOURCES)
 
 # ASM sources
 ASM_SOURCES =  \
-startup_stm32f746xx.s \
-kernel/context_switch.s
+startup_stm32f746xx.s
+
+# AS includes
+AS_INCLUDES =
+
+# C includes
+C_INCLUDES =  \
+-Iinclude \
+-Iinclude/qubitas \
+-Iinclude/kernel \
+-Iinclude/ds \
+-Iinclude/mm \
 
 #######################################
 # Toolchain
 #######################################
-PREFIX = arm-none-eabi-
-
-CC = $(PREFIX)gcc
-AS = $(PREFIX)gcc -x assembler-with-cpp
-CP = $(PREFIX)objcopy
-SZ = $(PREFIX)size
-
-HEX = $(CP) -O ihex
-BIN = $(CP) -O binary -S
+include mk/toolchain.mk
  
 #######################################
 # CFLAGS
@@ -57,19 +84,10 @@ MCU = $(CPU) -mthumb
 # AS defines
 AS_DEFS = 
 
+
 # C defines
 C_DEFS =  \
--DUSE_HAL_DRIVER \
--DSTM32F746xx \
 -D__QUBITAS__
-
-# AS includes
-AS_INCLUDES = 
-
-# C includes
-C_INCLUDES =  \
--Iinclude \
--Iqubitas
 
 # optimization
 OPT = -Og
@@ -86,7 +104,7 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 # LDFLAGS
 #######################################
 # link script
-LDSCRIPT = STM32F746ZGTx_FLASH.ld
+LDSCRIPT = qubitas.ld
 
 # libraries
 LIBS = -lc -lm
@@ -137,7 +155,7 @@ clean:
 -include $(wildcard $(BUILD_DIR)/*.d)
 
 #######################################
-# Doenload firmware
+# Download firmware
 #######################################
 st-flash:
 	st-flash --reset write $(BUILD_DIR)/$(TARGET).bin 0x8000000
