@@ -40,9 +40,15 @@ KERNEL_SOURCES = \
 kernel/list.c \
 kernel/task.c
 
+# Command line code
+CMD_SOURCES = \
+shell/cmd.c \
+shell/cmd_shell.c \
+
 C_SOURCES += $(DRIVER_SOURCES)
 C_SOURCES += $(LIB_SOURCES)
 C_SOURCES += $(MM_SOURCES)
+C_SOURCES += $(CMD_SOURCES)
 
 ifeq ($(APP), TEST)
 C_SOURCES += ./test_code/context_switch/main.c

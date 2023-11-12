@@ -6,6 +6,7 @@
 #include <qubitas/printk.h>
 #include <qubitas/dma.h>
 #include <qubitas/nvic.h>
+#include <qubitas/cmd.h>
 
 #define DEFAULT_FCLK                (16000000U)
 #define BAUDRATE                    (115200U)
@@ -174,17 +175,5 @@ void USART3_IRQHandler(void) {
     u8 data = usart_rxByte();
 
     /* TODO: command line parser */
-    switch (data) {
-        case '\r':
-            printk("\r\n");
-            break;
-        case '\b':
-            put_c(data);
-            put_c(' ');
-            put_c(data);
-            break;
-        default:
-            put_c(data);
-            break;
-    }
+    cmd_receive(data);
 }

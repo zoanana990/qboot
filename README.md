@@ -1,5 +1,15 @@
 # Qubitas Bootloader
 
+```text
+   ###    #     #  ######    #####   #######     #      #####
+  #   #   #     #  #     #     #        #        #     #     #
+ #     #  #     #  #     #     #        #       ###    #
+ #     #  #     #  ######      #        #       # #     #####
+ #     #  #     #  #     #     #        #      #####         #
+  #   #   #     #  #     #     #        #      #   #   #     #
+   ###     #####   ######    #####      #     ##   ##   #####
+     ###     AN OPEN SOURCE TUTORIAL OPERATING SYSTEM IN 2023
+```
 This is a simple bootloader for exercise
 
 ## Introduction
@@ -26,8 +36,9 @@ This is a simple bootloader for exercise
     - [ ] usart interrupt
     - [ ] usart DMA
     - [ ] scanf
-- [ ] command shell
+- [x] command shell
 - [ ] context switch
+  - [ ] Stack initialization
 - [ ] list api
 - [ ] malloc
 - [ ] task and thread

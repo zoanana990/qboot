@@ -15,6 +15,9 @@
 #define WORD_ALIGNMENT          (0x020)
 #define WORD_ALIGNMENT_MASK     (0x01f)
 
+#define WORD_MASK               (MASK(3))
+#define WORD_SIZE               sizeof(u32)
+
 #define likely(x)    __builtin_expect(!!(x), 1)
 #define unlikely(x)  __builtin_expect(!!(x), 0)
 

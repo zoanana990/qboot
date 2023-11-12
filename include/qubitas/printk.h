@@ -28,10 +28,12 @@ int snprintk(char *buffer, size_t count, char *format, ...);
 #define EXCEPTION           COLOR_CYAN     "[   EXCP   ] "
 #define INTERRUPT           COLOR_MAGENTA  "[   INTR   ] "
 #define CHECK_OK            COLOR_GREEN    "[    OK    ] "
+#define CHECK_CMD           COLOR_YELLOW   "[   CMD    ] "
 
 #define pr_info(s, ...)     printk(INFO s, ##__VA_ARGS__)
 #define pr_err(s, ...)      printk(ERROR s, ##__VA_ARGS__)
 #define pr_excp(s, ...)     printk(EXCEPTION s, ##__VA_ARGS__)
 #define pr_ok(s, ...)       printk(CHECK_OK s, ##__VA_ARGS__)
+#define pr_cmd(s, ...)      printk(CHECK_CMD s, ##__VA_ARGS__)
 
 #endif

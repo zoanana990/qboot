@@ -34,5 +34,4 @@ void dma_initUart3Tx(void);
 
 void dma_initUart3Rx(void);
 
-
 #endif
