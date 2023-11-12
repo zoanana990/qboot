@@ -3,6 +3,12 @@
 
 #include <qubitas/type.h>
 
+/* TODO: task suspend */
+#define TASK_SUSPEND
+
+/* TODO: task resume */
+#define TASK_RESUME
+
 typedef void (*task_handler_t)(void);
 
 struct task {

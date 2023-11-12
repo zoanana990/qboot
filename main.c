@@ -5,16 +5,27 @@
 
 extern char DMA_TX_DATA_STREAM[DMA_MAX_STRLEN];
 
-
 int main() {
 
     usart_init();
-    pr_info("Start kernel... \r\n");
-    pr_info("Qubitas Bootloader @Copyright\r\n");
+    printk("\r\n");
+    pr_ok("Compile Time: %s\r\n", __DATE__);
+    pr_ok("Kernel Start ... \r\n");
+    pr_ok("Khienh Qubitas kernel MIT@Liecense\r\n");
 
-    pr_info("Start init heap\r\n");
+    pr_ok("Start init heap\r\n");
     mm_init();
-    pr_info("Heap init successfully\r\n");
+    pr_ok("Heap init successfully\r\n");
+
+    printk("\r\n");
+    printk("   ###    #     #  ######    #####   #######     #      #####\r\n");
+    printk("  #   #   #     #  #     #     #        #        #     #     #\r\n");
+    printk(" #     #  #     #  #     #     #        #       ###    #\r\n");
+    printk(" #     #  #     #  ######      #        #       # #     #####\r\n");
+    printk(" #     #  #     #  #     #     #        #      #####         #\r\n");
+    printk("  #   #   #     #  #     #     #        #      #   #   #     #\r\n");
+    printk("   ###     #####   ######    #####      #     ##   ##   #####\r\n");
+    printk("     ###     AN OPEN SOURCE TUTORIAL OPERATING SYSTEM IN 2023\r\n");
 
     while (1);
 

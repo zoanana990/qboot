@@ -13,6 +13,7 @@ BUILD_DIR = build
 # source
 ######################################
 APP = 0
+RELEASE = 0
 
 # Driver code
 DRIVER_SOURCES = \
@@ -93,9 +94,14 @@ C_DEFS =  \
 OPT = -Og
 
 # compile gcc flags
-ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
+ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -fdata-sections -ffunction-sections
 
-CFLAGS += $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections -nostdlib -Werror
+CFLAGS += $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -fdata-sections -ffunction-sections -nostdlib -Werror
+
+ifeq ($(RELEASE), 1)
+ASFLAGS += -Wall
+CFLAGS += -Wall
+endif
 
 # Generate dependency information
 CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"

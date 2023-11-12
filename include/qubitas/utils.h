@@ -18,6 +18,14 @@
 #define likely(x)    __builtin_expect(!!(x), 1)
 #define unlikely(x)  __builtin_expect(!!(x), 0)
 
+#define ASSERT(__EXPR__)                                                \
+    do {                                                                \
+       if((__EXPR__)) {                                                 \
+           printk("expression: %#x\r\n", (__EXPR__));                   \
+           while(1);                                                    \
+       }                                                                \
+    } while(0);
+
 int atoi(const char *nptr);
 
 #endif

@@ -30,8 +30,8 @@ int snprintk(char *buffer, size_t count, char *format, ...);
 #define CHECK_OK            COLOR_GREEN    "[    OK    ] "
 
 #define pr_info(s, ...)     printk(INFO s, ##__VA_ARGS__)
-#define pr_err(s)           printk(ERROR "%s", s)
-#define pr_excp(s)          printk(EXCEPTION "%s", s)
-#define pr_ok(s)            printk(CHECK_OK "%s", s)
+#define pr_err(s, ...)      printk(ERROR s, ##__VA_ARGS__)
+#define pr_excp(s, ...)     printk(EXCEPTION s, ##__VA_ARGS__)
+#define pr_ok(s, ...)       printk(CHECK_OK s, ##__VA_ARGS__)
 
 #endif
