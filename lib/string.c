@@ -45,11 +45,21 @@ int strcmp(const char *s1, const char *s2) {
 }
 
 char *strtok(register char *s, register const char *delim) {
+    /* used to check the beginning of delimiter */
     register char *spanp;
+
+    /* c: current character, sc: split character */
     register int c, sc;
+
+    /* token */
     char *tok;
+
+    /* last beginning of position
+     * Here we need to check the last position, thus we use global variable
+     * */
     static char *last;
 
+    /* check the string is NULL and the last position is NULL, then return */
     if (s == NULL && (s = last) == NULL)
         return (NULL);
 
@@ -61,10 +71,12 @@ cont:
     c = *s++;
     for (spanp = (char *)delim; (sc = *spanp++) != 0;) {
         if (c == sc)
+            /* if it is delimiter, continue next character */
             goto cont;
     }
 
-    if (c == 0) {		/* no non-delimiter characters */
+    /* no non-delimiter characters, set the last to NULL */
+    if (c == 0) {
         last = NULL;
         return (NULL);
     }
@@ -78,12 +90,18 @@ cont:
         c = *s++;
         spanp = (char *)delim;
         do {
+            /* check the character is delimiter */
             if ((sc = *spanp++) == c) {
                 if (c == 0)
+                    /* if the character is NULL, set the string is NULL */
                     s = NULL;
                 else
+                    /* or use the delimiter to NULL */
                     s[-1] = 0;
+                /* check the next operation position */
                 last = s;
+
+                /* return the token position */
                 return (tok);
             }
         } while (sc != 0);
@@ -91,5 +109,5 @@ cont:
 }
 
 u32 strtoul(const char *ptr_n, char **ptr_end, register int base) {
-
+    return 0;
 }

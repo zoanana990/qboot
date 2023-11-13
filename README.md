@@ -33,14 +33,17 @@ This is a simple bootloader for exercise
 
 - [x] `printk`
 - [ ] `scanf`: implement by DMA
-    - [ ] usart interrupt
+    - [x] usart interrupt
     - [ ] usart DMA
     - [ ] scanf
 - [x] command shell
+- [ ] Timer interrupt
 - [ ] context switch
   - [ ] Stack initialization
-- [ ] list api
-- [ ] malloc
+- [x] list api
+- [ ] memory management
+  - [ ] `malloc`
+  - [ ] `free`
 - [ ] task and thread
     - [ ] task
     - [ ] thread

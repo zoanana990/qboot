@@ -2,6 +2,7 @@
 #include <qubitas/printk.h>
 #include <qubitas/io.h>
 #include <qubitas/string.h>
+#include <qubitas/utils.h>
 
 void help_cmd(int argc, char *argv[]);
 void memrl_cmd(int argc, char *argv[]);
@@ -28,11 +29,15 @@ void help_cmd(int argc, char *argv[]) {
 }
 
 void memrl_cmd(int argc, char *argv[]) {
-
+    u32 addr = strtoul(argv[0], NULL, 16);
+    printk("DATA: %#x\r\n", io_read(addr));
 }
 
 void memwl_cmd(int argc, char *argv[]) {
-
+    u32 addr = strtoul(argv[0], NULL, 16);
+    u32 data = strtoul(argv[1], NULL, 16);
+    io_write(addr, data);
+    printk("Done\r\n");
 }
 
 void wenwen_cmd(int argc, char *argv[]){
