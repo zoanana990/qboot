@@ -37,7 +37,6 @@ mm/mm.c \
 
 # Kernel code
 KERNEL_SOURCES = \
-kernel/list.c \
 kernel/task.c
 
 # Command line code
