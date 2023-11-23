@@ -101,7 +101,9 @@ OPT = -Og
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -fdata-sections -ffunction-sections
 
-CFLAGS += $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -fdata-sections -ffunction-sections -nostdlib -Werror
+CFLAGS += $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT)
+CFLAGS += -fdata-sections -ffunction-sections -nostdlib
+CFLAGS += -Werror -Wall
 
 ifeq ($(RELEASE), 1)
 ASFLAGS += -Wall

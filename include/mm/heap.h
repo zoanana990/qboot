@@ -5,8 +5,8 @@
 
 void mm_init(void);
 
-void *malloc(size_t size);
+void *kalloc(size_t size);
 
-void free(void *p);
+void kfree(void *p);
 
 #endif

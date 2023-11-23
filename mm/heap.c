@@ -33,11 +33,10 @@ static void *sbrk(u32 nbytes)
     return (void *) -1;
 }
 
-void *malloc(size_t nbytes)
-{
+void *kalloc(size_t nbytes) {
     struct list_head *ptr_curr, *ptr_prev;
     u32 nunits;
-    void *cp;
+    void *cp = NULL;
 
     /* Calculate the lowest size, including sizeof(struct mm_block) + real_malloc_size + padding
      * In this program, there are 16 bytes per unit.
@@ -71,15 +70,14 @@ void *malloc(size_t nbytes)
                  * then we update the unit to the structure */
                 ptr_curr_block = (struct mm_block *) cp;
                 ptr_curr_block->size = nunits;
-                free((void *) (ptr_curr_block + 1));
+                kfree((void *) (ptr_curr_block + 1));
                 ptr_curr = ptr_free;
             }
         }
     }
 }
 
-void free(void *p)
-{
+void kfree(void *p) {
     struct list_head *ptr_curr;
     struct mm_block *ptr_curr_block;
     struct mm_block *ptr_this_block = (struct mm_block *) p - 1;;
