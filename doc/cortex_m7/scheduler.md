@@ -179,6 +179,8 @@ __asm__ (
 - It has to compare the task's delay tick count with a global tick count
 - So, the scheduler should maintain a global tick count and update it for every systick exception
 
+## 
+
 ## Reference
 
 - [Extended Asm - Assembler Instructions with C Expression Operands](https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html#Input-Operands)

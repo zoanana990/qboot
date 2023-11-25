@@ -64,12 +64,15 @@ void cmd_receive(s8 data) {
             break;
         case '\r':
             printk("\r\n");
+            if(cmd_recv_buff == ptr_rcv_buff)
+                goto put_char;
 
             /* Need to process the command */
             cmd_process();
 
             /* clear the buffer */
             memset(cmd_recv_buff, 0x00, CMD_RCV_MAX_LEN);
+        put_char:
             ptr_rcv_buff = cmd_recv_buff;
             /* put the $ character */
             put_c('$');
