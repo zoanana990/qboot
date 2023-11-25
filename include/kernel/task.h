@@ -29,8 +29,7 @@ enum {
     TASK_STATE_PENDING,
 };
 
-errno task_create(void *);
+errno task_create(void);
 
-errno task_addToReadyList(struct task *ptr_task);
 
 #endif

@@ -3,7 +3,7 @@
 #include <mm/heap.h>
 #include <ds/list.h>
 
-#define MAX_HEAPS 4096
+#define MAX_HEAPS 65536
 
 struct mm_block {
     struct list_head head;
@@ -109,3 +109,6 @@ void kfree(void *p) {
     /* update the ptr_curr->ptr in ptr_free */
     ptr_free = ptr_curr;
 }
+
+/* TODO realloc */
+/* TODO calloc */

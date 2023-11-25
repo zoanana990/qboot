@@ -4,6 +4,7 @@
 #include <qubitas/string.h>
 #include <qubitas/utils.h>
 #include <mm/heap.h>
+#include <app/app.h>
 
 void help_cmd(int argc, char *argv[]);
 void memrl_cmd(int argc, char *argv[]);
@@ -13,12 +14,15 @@ void wenwen_cmd(int argc, char *argv[]);
 
 void heap_test_cmd(int argc, char *argv[]);
 
+void svc_test_cmd(int argc, char *argv[]);
+
 struct cmd cmd_table [] = {
         {"help",  "help, show all support commands\r\n",                       help_cmd,      0},
         {"memrl", "memrl <addr>, read the memory address\r\n",                 memrl_cmd,     1},
         {"memwl", "memwl <addr> <data>, write the data to memory address\r\n", memwl_cmd,     2},
         {"mtest", "mtest, test the heap behavior\r\n",                         heap_test_cmd, 0},
         {"wen",   "wen, wenwen character\r\n",                                 wenwen_cmd,    1},
+        {"svc",   "svc, test code\r\n",                                        svc_test_cmd,  0},
 };
 
 u32 cmd_getTableSize() {
@@ -69,6 +73,10 @@ void heap_test_cmd(int argc, char *argv[]) {
     kfree(segment6);
     kfree(segment7);
     printk("Malloc test complete\n");
+}
+
+void svc_test_cmd(int argc, char *argv[]) {
+    svc_main();
 }
 
 void wenwen_cmd(int argc, char *argv[]) {

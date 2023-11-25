@@ -2,7 +2,8 @@
 #include <qubitas/dma.h>
 #include <qubitas/printk.h>
 #include <mm/heap.h>
-#include <mm/mm.h>
+
+#include <app/app.h>
 
 extern char DMA_TX_DATA_STREAM[DMA_MAX_STRLEN];
 
@@ -30,6 +31,7 @@ int main() {
     printk("\r\n");
     pr_ok("Please press [enter] to get into the console \r\n");
 
+    svc_main();
 
     while (1);
 

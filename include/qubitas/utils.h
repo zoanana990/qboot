@@ -6,6 +6,12 @@
 #define FALSE                   (0)
 #define MASK(bit)               (~(~0U << (bit)))
 
+#define IS_DIGIT(d)             ((d) >= '0' && (d) <= '9')
+#define IS_SPACE(c)             (c == ' ')
+#define IS_ALPHA(c)             ('a' < c && c < 'z') || ('A' < c && c < 'Z')
+#define IS_UPPER(c)             ('A' < c && c < 'Z')
+#define IS_LOWER(c)             ('a' < c && c < 'z')
+
 #define INT_MAX                 (0x7fffffff)
 #define INT_MIN                 (0x80000000)
 

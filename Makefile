@@ -1,7 +1,7 @@
 ######################################
 # target
 ######################################
-TARGET = bootloader
+TARGET = qubitas
 
 #######################################
 # paths
@@ -41,21 +41,32 @@ kernel/task.c
 
 # Command line code
 CMD_SOURCES = \
-shell/cmd.c \
-shell/cmd_shell.c \
+cmd/cmd.c \
+cmd/cmd_shell.c \
 
+# arch dependent code
+ARCH_SOURCES = \
+arch/arm/init/hw_init.c \
+arch/arm/exception.c
+
+# app source code
+APP_SOURCES = \
+app/svc/svc.c
+
+C_SOURCES += $(APP_SOURCES)
 C_SOURCES += $(DRIVER_SOURCES)
 C_SOURCES += $(LIB_SOURCES)
 C_SOURCES += $(MM_SOURCES)
 C_SOURCES += $(CMD_SOURCES)
 
-ifeq ($(APP), TEST)
+ifeq ($(APP), CS)
+$(info "Compiling Context switch")
 C_SOURCES += ./test_code/context_switch/main.c
 else
-
+#$(info "Compiling kernel")
 endif
-
 C_SOURCES += main.c
+
 
 # ASM sources
 ASM_SOURCES =  \
@@ -71,6 +82,8 @@ C_INCLUDES =  \
 -Iinclude/kernel \
 -Iinclude/ds \
 -Iinclude/mm \
+-Iinclude/arch \
+-Iinclude/app
 
 #######################################
 # Toolchain

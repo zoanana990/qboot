@@ -41,15 +41,16 @@ This is a simple bootloader for exercise
 - [ ] context switch
   - [ ] Stack initialization
 - [x] list api
-- [ ] memory management
-  - [ ] `malloc`
-  - [ ] `free`
+- [x] memory management
+  - [x] `malloc`
+  - [x] `free`
 - [ ] task and thread
-    - [ ] task
-    - [ ] thread
+  - [ ] task
+  - [ ] thread
 - [ ] scheduler
     - [ ] Round Robin
 
 ## Reference
 
+- [task](https://www.codeinsideout.com/blog/stm32/task-scheduler/#run-the-first-task)
 - [malloc](https://github.com/exsourcode/csapp/tree/master/code/vm)

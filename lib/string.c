@@ -108,6 +108,14 @@ cont:
     }
 }
 
+/**
+ * `strtoul`: convert a string to u32
+ *
+ * Deal with:
+ * */
 u32 strtoul(const char *ptr_n, char **ptr_end, register int base) {
-    return 0;
+//    register const s8 *s = ptr_n;
+    register u32 result = 0;
+//    register s8 c;
+    return result;
 }

@@ -2,7 +2,6 @@
 #include <qubitas/utils.h>
 #include <qubitas/string.h>
 
-#define IS_DIGIT(d)             ((d) >= '0' && (d) <= '9')
 #define C_TO_D(c)               ((c) - '0')
 #define MAXBUF                  (sizeof(int) * 8)
 

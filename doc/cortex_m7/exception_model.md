@@ -22,8 +22,8 @@ There are 2 types of exceptions:
 - Only 9 implemented system exceptions. 6 are reserved for future implemenations
 - Exception number 16 is Interrupt 1 (IRQ no.1)
 - Exception table in Cortex M7
-    
-  ![img.png](exception_table.png)
+
+  ![img.png](img/exception_table.png)
 
 
 ### Exceptions
@@ -75,11 +75,11 @@ Let's see some exceptions in arm cortex-m7
            - Software can suppress hardware generation of the SysTick event, but
              ICSR.PENDSTSET and ICSR.PENDSTCLR are always available to software.
 
-
-![img.png](ICSR.png)
+![img.png](img/ICSR.png)
 
 ### ARM cortex M7 processor peripherals
-![img.png](cortex_m7_processor.png)
+
+![img.png](img/cortex_m7_processor.png)
 
 This is arm cortex m7 processor, in this diagram, there are several peripherals in the processor
 
@@ -95,13 +95,13 @@ These registers are used to modify the priority of the handlers
 0xE000ED20 SHPR3 RW 0x00000000 System Handler Priority Register 3
 ```
 
-![img.png](System_handler_priority_regsiter.png)
+![img.png](img/System_handler_priority_regsiter.png)
 
 and let's see the system handler control and state register, `SHCSR`
 - Exception processing automatically updates the SHCSR fields. However, software can
   write to the register to add or remove the pending or active state of an exception.
 - Please use read-modify-write sequence to avoid unintended effects on the state of the exception handlers
-![img.png](SHCSR.png)
+  ![img.png](img/SHCSR.png)
 
 #### Summarize
 - You can enable fault handlers
@@ -139,7 +139,8 @@ and let's see the system handler control and state register, `SHCSR`
                    ...
    ```
 #### NVIC_ISER, Interrupt Set-Enable Registers
-![img.png](NVIC_ISER.png)
+
+![img.png](img/NVIC_ISER.png)
 We need to enable the nvic interrupt by setting the ISER-series register
 set one as enable, set zero is not working
 
@@ -193,7 +194,7 @@ that is `Interrupt Active Bit Registers, NVIC_IABR0-NVIC_IABR15`
 ### Exception exit sequence
 1. In cortex M3/M4, processors the exception return mechanism is triggered using a special return address called EXC_RETURN
 
-    ![img.png](EXC_RETURN.png)
+   ![img.png](img/EXC_RETURN.png)
 2. EXC_RETURN is generated during exception entry and is stored in the `LR`
 3. When EXC_RETURN is written to PC, it triggered the exception return
 
@@ -286,6 +287,7 @@ HardFault status register
   system-level services (like accessing device drivers, peripherals) from the kernel of the OS
 - PendSV is mainly used in an OS environment to carry out context switching between 2 or more tasks when no other exceptions
   are active in the system
+
 ### SVC instruction
 - SVC is a thumb ISA instruction which causes SVC exception
 - In an RTOS scenario, user tasks can execute SVC instruction with an associated argument to make supervisory calls 
@@ -307,9 +309,9 @@ void SVC_Handler(int svc_number) {
     switch (svc_number) {
         case 1:
             ...
-        case 2:
-            ...
-    }
+case 2:
+...
+}
 }
 
 /*-------------------------------------------------------------------*/
@@ -318,16 +320,69 @@ void SVC_Handler(int svc_number) {
  * */
 ```
 
+When the processor get into handler mode, it will put the register to the stack
+
+```txt
+Last stack item
+---------------
+xPSR
+Return address (PC)
+LR
+R12
+R3
+R2
+R1
+R0 <-------------------- MSP
+```
+
 ### Methods to trigger SVC exception
+
 There are two ways
+
 1. Direct execution of SVC instruction with an immediate value, more efficiently
 2. Setting the exception pending bit in `System Handler control and state register`
 
 ### How to extract the SVC number
+
 - The SVC instruction has a number embedded within it, often referred to as the SVC number
 - In the SVC handler, you should fetch the opcode of the SVC instruction and then extract the SVC number
-- To fetch the opcode of SVC instruction from program memory, we should have the value of PC (return address) where the user code
+- To fetch the opcode of SVC instruction from program memory, we should have the value of PC (return address) where the
+  user code
   had interrupted while triggering the SVC exception
-- The value of the PC (return address) where the user code had interrupted is stored in the stack as a part of 
+- The value of the PC (return address) where the user code had interrupted is stored in the stack as a part of
   exception entry sequence by the processor
-  - Note: Read the PC value, that is, the address of the current instruction + 4
+    - Note: Read the PC value, that is, the address of the current instruction + 4
+
+### PendSV exception
+
+- It is an exception type 14 and has a programmable priority level
+- This exception is triggered by setting its pending status by writing to the "Interrupt control and state register" of
+  processor
+- Triggering a pendSV system exception is a way of invoking the preemptive kernel to carry out the context switch in an
+  OS environment
+- In an OS environment, PendSV handler is set to the lowest priority level, and the pendSV handler carries out the
+  context switch operation
+
+#### Typical use of pendSV
+
+- Typically, this exception is triggered inside a higher priority exception handler, and it gets executed when the
+  higher
+  priority handler finishes
+- Using this characteristic, we can schedule the pendSV exception handler to be executed after all the other interrupt
+  processing tasks are done
+- This is very useful for a context switching operation, which is a crucial operation in various OS design
+- Using PendSV in context switching will be more efficient in an interrupt noisy environment
+- In an interrupt noisy environment, and we need to delay the context switching until all IRQ are executed
+
+#### PendSV other use cases
+
+- Offloading interrupt processing
+- If a higher priority handler is doing time-consuming work, then the other lower priority interrupts will suffer, and
+  systems reponsive ness may reduce.
+  This can be solved using a combination of ISR and pendSV handler
+- Interrupts may be serviced in 2 halves
+    - The first half is the time critical part that needs to be executed as a part of ISR
+    - The second half is called bottom half, is basically delayed execution where reset of the time-consuming work will
+      be done
+    - Therefore, PendSV can be used in these cases, to handle the second half execution by triggering it in the first
+      half
