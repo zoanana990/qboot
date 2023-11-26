@@ -31,8 +31,6 @@ int main() {
     printk("\r\n");
     pr_ok("Please press [enter] to get into the console \r\n");
 
-    svc_main();
-
     while (1);
 
     /* not expect to go here */

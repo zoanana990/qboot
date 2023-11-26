@@ -10,19 +10,22 @@ void help_cmd(int argc, char *argv[]);
 void memrl_cmd(int argc, char *argv[]);
 void memwl_cmd(int argc, char *argv[]);
 
-void wenwen_cmd(int argc, char *argv[]);
-
+/* driver code test command */
 void heap_test_cmd(int argc, char *argv[]);
-
 void svc_test_cmd(int argc, char *argv[]);
+void rcc_test_cmd(int argc, char *argv[]);
+
+/* others command */
+void wenwen_cmd(int argc, char *argv[]);
 
 struct cmd cmd_table [] = {
         {"help",  "help, show all support commands\r\n",                       help_cmd,      0},
         {"memrl", "memrl <addr>, read the memory address\r\n",                 memrl_cmd,     1},
         {"memwl", "memwl <addr> <data>, write the data to memory address\r\n", memwl_cmd,     2},
         {"mtest", "mtest, test the heap behavior\r\n",                         heap_test_cmd, 0},
+        {"svc",   "svc, SVC handler test code\r\n",                            svc_test_cmd,  0},
+        {"rcc",   "rcc, RCC driver code test code\r\n",                        rcc_test_cmd,  0},
         {"wen",   "wen, wenwen character\r\n",                                 wenwen_cmd,    1},
-        {"svc",   "svc, test code\r\n",                                        svc_test_cmd,  0},
 };
 
 u32 cmd_getTableSize() {
@@ -39,14 +42,14 @@ void help_cmd(int argc, char *argv[]) {
 
 void memrl_cmd(int argc, char *argv[]) {
     u32 addr = strtoul(argv[0], NULL, 16);
-    printk("DATA: %#x\r\n", io_read(addr));
+    printk("Address: %#x, Data: %#x\r\n", addr, io_read(addr));
 }
 
 void memwl_cmd(int argc, char *argv[]) {
     u32 addr = strtoul(argv[0], NULL, 16);
     u32 data = strtoul(argv[1], NULL, 16);
     io_write(addr, data);
-    printk("Done\r\n");
+    printk("Write addr = %#x, data = %#x ...done\r\n", addr, data);
 }
 
 void heap_test_cmd(int argc, char *argv[]) {
@@ -77,6 +80,20 @@ void heap_test_cmd(int argc, char *argv[]) {
 
 void svc_test_cmd(int argc, char *argv[]) {
     svc_main();
+}
+
+void rcc_test_cmd(int argc, char *argv[]) {
+    /**
+     * This test code is used to do a exercise
+     * - Using HSE configure the SYSCLK as 8 MHz
+     * - AHB clock as 4 MHz (HCLK)
+     * - APB1 clock as 2 MHz (PCLK1)
+     * - APB2 clock as 2 MHz (PCLK2)
+     *
+     * Use these two APIs
+     * - rcc_configOsc
+     * - rcc_configClk
+     * */
 }
 
 void wenwen_cmd(int argc, char *argv[]) {

@@ -1,4 +1,12 @@
 #ifndef __TIMER_H__
 #define __TIMER_H__
 
+enum {
+    RCC_OSCILLATOR_NONE,
+    RCC_OSCILLATOR_HSE,
+    RCC_OSCILLATOR_HSI,
+    RCC_OSCILLATOR_LSE = 4,
+    RCC_OSCILLATOR_LSI = 8,
+};
+
 #endif

@@ -13,6 +13,7 @@
 #define IS_LOWER(c)             ('a' < c && c < 'z')
 
 #define INT_MAX                 (0x7fffffff)
+#define UINT_MAX                (0xffffffffUL)
 #define INT_MIN                 (0x80000000)
 
 #define BYTE_ALIGNMENT          (0x008)

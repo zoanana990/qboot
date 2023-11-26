@@ -1,6 +1,7 @@
 #include <qubitas/string.h>
 #include <qubitas/type.h>
 #include <qubitas/utils.h>
+#include <qubitas/printk.h>
 
 char *strncpy(char *dst, const char *src, register size_t n) {
 
@@ -110,12 +111,47 @@ cont:
 
 /**
  * `strtoul`: convert a string to u32
- *
- * Deal with:
  * */
 u32 strtoul(const char *ptr_n, char **ptr_end, register int base) {
-//    register const s8 *s = ptr_n;
-    register u32 result = 0;
-//    register s8 c;
+    register const s8 *s = ptr_n;
+    register u32 result;
+    register s8 c;
+
+    /* check the string has space */
+    do {
+        c = *s++;
+    } while(IS_SPACE(c));
+
+    /* check the base is hex, decimal, binary etc. */
+    if((base == 0 || base == 16) && c == '0' && (*s == 'x' || *s == 'X')) {
+        c = s[1];
+        s += 2;
+        base = 16;
+    }
+
+    if(base == 0)
+        base = 10;
+
+    /* add the number according to the base */
+    for(result = 0;; c = *s++) {
+        if(IS_DIGIT(c))
+            c -= '0';
+        else if (IS_ALPHA(c))
+            /* get 'a' then add 10
+             * Note: c - (a - 10) = c - a + 10
+             * */
+            c -= IS_UPPER(c) ? 'A' - 10 : 'a' - 10;
+        else {
+            break;
+        }
+
+        if(c >= base){
+            break;
+        }
+
+        result *= base;
+        result += c;
+    }
+
     return result;
 }

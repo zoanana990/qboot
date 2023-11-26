@@ -51,6 +51,6 @@ This is a simple bootloader for exercise
     - [ ] Round Robin
 
 ## Reference
-
+- [tenok](https://hackmd.io/@shengwen/tenok#VI-Linux-%E9%A2%A8%E6%A0%BC%E7%9A%84-Linked-list-%E5%AF%A6%E4%BD%9C)
 - [task](https://www.codeinsideout.com/blog/stm32/task-scheduler/#run-the-first-task)
 - [malloc](https://github.com/exsourcode/csapp/tree/master/code/vm)

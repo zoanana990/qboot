@@ -12,7 +12,7 @@ BUILD_DIR = build
 ######################################
 # source
 ######################################
-APP = 0
+APP = 1
 RELEASE = 0
 
 # Driver code
@@ -22,7 +22,8 @@ driver/uart.c \
 driver/crc.c \
 driver/exti.c \
 driver/dma.c \
-driver/nvic.c
+driver/nvic.c \
+driver/timer.c
 
 # library code
 LIB_SOURCES = \
@@ -51,7 +52,8 @@ arch/arm/exception.c
 
 # app source code
 APP_SOURCES = \
-app/svc/svc.c
+app/svc/svc.c \
+app/cs/
 
 C_SOURCES += $(APP_SOURCES)
 C_SOURCES += $(DRIVER_SOURCES)
@@ -59,14 +61,13 @@ C_SOURCES += $(LIB_SOURCES)
 C_SOURCES += $(MM_SOURCES)
 C_SOURCES += $(CMD_SOURCES)
 
-ifeq ($(APP), CS)
+ifeq ($(APP), 1)
 $(info "Compiling Context switch")
 C_SOURCES += ./test_code/context_switch/main.c
 else
-#$(info "Compiling kernel")
-endif
+$(info "Compiling kernel")
 C_SOURCES += main.c
-
+endif
 
 # ASM sources
 ASM_SOURCES =  \
@@ -183,11 +184,11 @@ clean:
 #######################################
 # Download firmware
 #######################################
-st-flash:
+flash:
 	st-flash --reset write $(BUILD_DIR)/$(TARGET).bin 0x8000000
 
-st-erase:
+erase:
 	st-flash erase
 
-check: clean all st-erase st-flash
+check: clean all flash
 # *** EOF ***
