@@ -53,7 +53,7 @@ arch/arm/exception.c
 # app source code
 APP_SOURCES = \
 app/svc/svc.c \
-app/cs/
+app/cs/cs.c
 
 C_SOURCES += $(APP_SOURCES)
 C_SOURCES += $(DRIVER_SOURCES)

@@ -22,15 +22,42 @@ This is a simple bootloader for exercise
 ## Getting Start
 
 ### Environment Setup
-
-```shell
-
-```
+TODO
 
 ## Directory architecture
+```txt
+.
+├── app                // architecture level test code
+│    ├── cs            // prototype os
+│    └── svc           // user space -> kernel space
+├── arch               // for arm cm7 architecture
+│    └── arm
+│         └── init
+├── boot               // for bootloader usage
+├── build              // the compiled image
+├── cmd                // command line usage, will move to app
+├── doc                // development document
+│    ├── FreeRTOS
+│    ├── Qubitas
+│    └── cortex_m7
+│        └── img
+├── driver             // driver code for STM32F746
+├── include
+│    ├── app
+│    ├── arch
+│    │    └── arm
+│    ├── ds
+│    ├── kernel
+│    ├── mm
+│    ├── net
+│    └── qubitas
+├── kernel             // kernel source code
+├── lib                // some gcc code like printk, etc.
+├── mk                 // sub-level makefile 
+└── mm                 // memory management, e.g. heap, memset etc.
+```
 
 ## Features
-
 - [x] `printk`
 - [ ] `scanf`: implement by DMA
     - [x] usart interrupt

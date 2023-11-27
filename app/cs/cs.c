@@ -4,6 +4,7 @@
 #include <qubitas/printk.h>
 #include <qubitas/io.h>
 #include <kernel/task.h>
+#include <app/app.h>
 
 /* some stack memory calculations */
 #define SIZE_TASK_STACK                 (1024U)
