@@ -10,6 +10,9 @@ void usart_init(void);
 /* USART reset */
 void usart_reset(void);
 
+/* set uart baudrate */
+void usart_setBaudrate(int base_addr, int clk_rate, int baudrate);
+
 /* send n-bytes data */
 void usart_txData(u8 *ptr_tx_buffer);
 

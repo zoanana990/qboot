@@ -23,7 +23,8 @@ driver/crc.c \
 driver/exti.c \
 driver/dma.c \
 driver/nvic.c \
-driver/timer.c
+driver/timer.c \
+driver/rcc.c
 
 # library code
 LIB_SOURCES = \
@@ -55,6 +56,7 @@ APP_SOURCES = \
 app/svc/svc.c \
 app/cs/cs.c
 
+C_SOURCES += $(KERNEL_SOURCES)
 C_SOURCES += $(APP_SOURCES)
 C_SOURCES += $(DRIVER_SOURCES)
 C_SOURCES += $(LIB_SOURCES)

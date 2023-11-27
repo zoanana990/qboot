@@ -2,7 +2,6 @@
 #include <qubitas/dma.h>
 #include <qubitas/printk.h>
 #include <mm/heap.h>
-
 #include <app/app.h>
 
 extern char DMA_TX_DATA_STREAM[DMA_MAX_STRLEN];

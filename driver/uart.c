@@ -89,7 +89,7 @@ void usart_init(void) {
     gpio_setPuPd(GPIOD, USART3_RX, GPIO_OUTPUT_Pull_UP);
 
     /* 3. Baudrate setup */
-    io_write(USART_BRR(base), (DEFAULT_FCLK / BAUDRATE) + 1);
+    usart_setBaudrate(base, DEFAULT_FCLK, BAUDRATE);
 
     /* 4. Configure the data width, no of stop bits etc.
      *    <Default configuration meets our requirement>
@@ -110,6 +110,10 @@ void usart_init(void) {
     /* 7. Enable RXNE interrupt */
     io_writeBit(USART_CR1(base), USART_CR1_RXNEIE_BIT);
     nvic_enIrq(USART3_IRQ_NO);
+}
+
+void usart_setBaudrate(int base_addr, int clk_rate, int baudrate) {
+    io_write(USART_BRR(base_addr), (clk_rate / baudrate) + 1);
 }
 
 /* USART reset */

@@ -1,6 +1,7 @@
 #include <qubitas/printk.h>
 #include <qubitas/utils.h>
 #include <qubitas/string.h>
+#include <arch/arm/cortex_m7.h>
 
 #define C_TO_D(c)               ((c) - '0')
 #define MAXBUF                  (sizeof(int) * 8)
@@ -269,9 +270,11 @@ __attribute__((weak)) void append_c(char c) {
 
 int printk(char *format, ...) {
     va_list va;
+    INTERRUPT_DISABLE();
     va_start(va, format);
     _do_print(format, &va, put_c);
     va_end(va);
+    INTERRUPT_ENABLE();
     return 0;
 }
 

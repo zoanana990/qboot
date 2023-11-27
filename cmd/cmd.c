@@ -50,17 +50,64 @@ void cmd_process(void) {
 
     pr_cmd("Command not found, please call help\r\n");
 }
+#if 1
+/**
+ * Arrow key:
+ * UP: 0x1b 0x5b 0x42
+ * DOWN: 0x1b 0x5b 0x42
+ * RIGHT: 0x1b 0x5b 0x43
+ * LEFT: 0x1b 0x5b 0x44
+ * */
+int cmd_detectArrowKey() {
+    if (ptr_rcv_buff - cmd_recv_buff < 3)
+        return -1;
+    s8 *ptr_prev = ptr_rcv_buff - 1;
 
+    if(*ptr_prev != 0x5b)
+        return -1;
+    ptr_prev--;
+
+    if(*ptr_prev != 0x1b)
+        return -1;
+
+    switch(*ptr_rcv_buff) {
+        case 'A':
+            ptr_rcv_buff -= 3;
+            memset(ptr_rcv_buff, 0x0, 3);
+            break;
+        case 'B':
+            ptr_rcv_buff -= 3;
+            memset(ptr_rcv_buff, 0x0, 3);
+            break;
+        case 'C':
+            ptr_rcv_buff -= 3;
+            memset(ptr_rcv_buff, 0x0, 3);
+            break;
+        case 'D':
+            ptr_rcv_buff -= 3;
+            memset(ptr_rcv_buff, 0x0, 3);
+            break;
+        default:
+            ptr_rcv_buff -= 3;
+            memset(ptr_rcv_buff, 0x0, 3);
+            break;
+    }
+    return 0;
+}
+#endif
 void cmd_receive(s8 data) {
 
     if (!data)
         return;
 
     switch (data) {
-        case 0x25:
-        case 0x26:
-        case 0x27:
-        case 0x28:
+        /* detect the arrow key */
+        case 'A':
+        case 'B':
+        case 'C':
+        case 'D':
+            if(cmd_detectArrowKey())
+                goto put;
             break;
         case '\r':
             printk("\r\n");
@@ -89,6 +136,7 @@ void cmd_receive(s8 data) {
             }
             break;
         default:
+        put:
             if (ptr_rcv_buff - cmd_recv_buff < CMD_RCV_MAX_LEN) {
                 *ptr_rcv_buff = data;
                 ptr_rcv_buff++;

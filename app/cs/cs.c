@@ -52,6 +52,7 @@
 struct task user_task[MAX_TASKS];
 
 int current_task = 0;
+u32 global_tick_count;
 
 void task1_handler(void);
 
@@ -73,7 +74,7 @@ void enable_processor_faults();
 
 void task_delay(u32 tick_count);
 
-int cs_main() {
+void cs_main(void) {
 
     pr_info("Sample code for context switch... \n");
 
