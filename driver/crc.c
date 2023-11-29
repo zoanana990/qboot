@@ -3,14 +3,15 @@
 /* TODO: use base + offset */
 
 /* AHB peripheral clock enable register */
-#define RCC_AHB1ENR *(__vo u32 *) 0x40023830U
+#define RCC_AHB1ENR         *(__vo u32 *) 0x40023830U
 
+#define CRC_BASE            (0x40023000UL)
 /* CRC data register */
-#define CRC_DR *(__vo u32 *) 0x40023000U
+#define CRC_DR              *(__vo u32 *) 0x40023000U
 /* CRC control register */
-#define CRC_CR *(__vo u32 *) 0x40023008U
+#define CRC_CR              *(__vo u32 *) 0x40023008U
 /* initial CRC value */
-#define CRC_INIT *(__vo u32 *) 0x40023010U
+#define CRC_INIT            *(__vo u32 *) 0x40023010U
 
 /* CRC hardware reset */
 void crc_reset(void) {

@@ -39,7 +39,8 @@ mm/mm.c \
 
 # Kernel code
 KERNEL_SOURCES = \
-kernel/task.c
+kernel/task.c \
+kernel/kernel.c
 
 # Command line code
 CMD_SOURCES = \

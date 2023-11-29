@@ -61,6 +61,7 @@ void svc_main(void) {
     while(1);
 }
 
+#if 0
 __attribute__((naked))void SVC_Handler(void) {
     /* 1. get the value of MSP
      * Note: MRS: move destination, special register
@@ -121,3 +122,4 @@ void _SVC_Handler(u32 *ptr_base_stack_frame) {
             printk("return to the user space\r\n");
     }
 }
+#endif

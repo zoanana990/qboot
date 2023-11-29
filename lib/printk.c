@@ -270,11 +270,11 @@ __attribute__((weak)) void append_c(char c) {
 
 int printk(char *format, ...) {
     va_list va;
-    INTERRUPT_DISABLE();
+    // INTERRUPT_DISABLE();
     va_start(va, format);
     _do_print(format, &va, put_c);
     va_end(va);
-    INTERRUPT_ENABLE();
+    // INTERRUPT_ENABLE();
     return 0;
 }
 

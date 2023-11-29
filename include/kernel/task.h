@@ -3,13 +3,22 @@
 
 #include <qubitas/type.h>
 
-/* TODO: task suspend */
-#define TASK_SUSPEND
+#define MAX_TASKS               (2)
+#define STACK_SIZE              (256)
 
-/* TODO: task resume */
-#define TASK_RESUME
+#define HANDLER_MSP             (0xFFFFFFF1UL)
+#define THREAD_MSP              (0xFFFFFFF9UL)
+#define THREAD_PSP              (0xFFFFFFFDUL)
 
-typedef void (*task_handler_t)(void);
+#define SCS_BASE                (u32) (0xE000E000)
+#define SCB_BASE                (SCS_BASE + 0x0D00)
+#define SCB_ICSR                (u32 __vo) (SCB_BASE + 0x004)
+#define SCB_ICSR_PENDSVSET_BIT  (28)
+
+/* bit[24] is thumb bit */
+#define DUMMY_XPSR                      (0x01000000UL)
+
+typedef void (*task_handler_t)(void *);
 
 struct task {
     /* process stack pointer value */
@@ -29,7 +38,9 @@ enum {
     TASK_STATE_PENDING,
 };
 
-errno task_create(void);
-
+void task_init();
+errno task_create(task_handler_t task_handler, void *ptr_user_data);
+void task_start();
+void task_kill(int task_id);
 
 #endif

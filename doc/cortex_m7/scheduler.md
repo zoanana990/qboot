@@ -5,7 +5,7 @@
 
 ## Introduction
 
-- In context switch target, i wil implement a scheduler which schedule multiple user tasks in a round-robin fashion
+- In context switch target, i will implement a scheduler which schedule multiple user tasks in a round-robin fashion
   by carrying out the context switch operation
 - Round-robin scheduling method is, time slices are assigned to each task equal portions and in circular order
 - First will use systick handler to carry out the context switch operation between multiple tasks

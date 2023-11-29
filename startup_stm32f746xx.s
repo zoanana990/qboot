@@ -1,22 +1,5 @@
-/**
-  ******************************************************************************
-  * @file      startup_stm32f746xx.s
-  * @author    MCD Application Team
-  * @brief     STM32F746xx Devices vector table for GCC based toolchain. 
-  *            This module performs:
-  *                - Set the initial SP
-  *                - Set the initial PC == Reset_Handler,
-  *                - Set the vector table entries with the exceptions ISR address
-  *                - Branches to main in the C library (which eventually
-  *                  calls main()).
-  *            After Reset the Cortex-M7 processor is in Thread mode,
-  *            priority is Privileged, and the Stack is set to Main.
-  ******************************************************************************
-  */
-    
   .syntax unified
   .cpu cortex-m7
-  .fpu softvfp
   .thumb
 
 .global  g_pfnVectors
