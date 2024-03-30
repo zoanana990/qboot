@@ -71,11 +71,10 @@ TODO
 - [x] memory management
   - [x] `malloc`
   - [x] `free`
-- [ ] task and thread
-  - [ ] task
-  - [ ] thread
-- [ ] scheduler
-    - [ ] Round Robin
+- [x] task and thread
+  - [x] task
+- [x] scheduler
+    - [x] Round Robin
 
 ## Reference
 - [tenok](https://hackmd.io/@shengwen/tenok#VI-Linux-%E9%A2%A8%E6%A0%BC%E7%9A%84-Linked-list-%E5%AF%A6%E4%BD%9C)
